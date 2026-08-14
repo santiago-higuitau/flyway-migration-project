@@ -1,0 +1,134 @@
+# Flyway Migrate | applies pending migrations to Neon `main` on push.
+# Required secret: NEON_MAIN_DATABASE_URL (postgresql://user:pass@host/db?sslmode=require)
+
+name: Flyway Migrate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'sql_migrations/**'
+      - '.github/workflows/flyway-migrate.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: flyway-production
+  cancel-in-progress: false
+
+env:
+  FLYWAY_IMAGE: flyway/flyway:13.1.0-alpine
+  MIGRATIONS_DIR: sql_migrations
+
+jobs:
+  migrate:
+    name: Apply migrations to Neon (main)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # Neon gives a URI (postgresql://user:pass@host/db); Flyway/JDBC needs
+      # url + user + password separately, without channel_binding.
+      - name: Translate Neon URI to JDBC params
+        id: conn
+        env:
+          NEON_URI: ${{ secrets.NEON_MAIN_DATABASE_URL }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${NEON_URI:-}" ]; then
+            echo "::error::NEON_MAIN_DATABASE_URL secret is not set."
+            exit 1
+          fi
+
+          no_proto="${NEON_URI#*://}"
+          creds="${no_proto%%@*}"
+          server="${no_proto#*@}"
+
+          user="${creds%%:*}"
+          pass="${creds#*:}"
+
+          host_db="${server%%\?*}"
+          host="${host_db%%/*}"
+          db="${host_db#*/}"
+
+          jdbc="jdbc:postgresql://${host}/${db}?sslmode=require"
+
+          echo "::add-mask::${pass}"
+          echo "jdbc=${jdbc}" >> "$GITHUB_OUTPUT"
+          echo "user=${user}" >> "$GITHUB_OUTPUT"
+          echo "pass=${pass}" >> "$GITHUB_OUTPUT"
+          echo "Target: ${host}/${db}"
+
+      - name: Pull Flyway image
+        run: docker pull "${FLYWAY_IMAGE}"
+
+      - name: Flyway info (before)
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}/${MIGRATIONS_DIR}:/flyway/sql:ro" \
+            "${FLYWAY_IMAGE}" \
+            -url="${{ steps.conn.outputs.jdbc }}" \
+            -user="${{ steps.conn.outputs.user }}" \
+            -password="${{ steps.conn.outputs.pass }}" \
+            -locations="filesystem:/flyway/sql" \
+            info
+
+      # Catches checksum mismatches before touching the database.
+      - name: Flyway validate
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}/${MIGRATIONS_DIR}:/flyway/sql:ro" \
+            "${FLYWAY_IMAGE}" \
+            -url="${{ steps.conn.outputs.jdbc }}" \
+            -user="${{ steps.conn.outputs.user }}" \
+            -password="${{ steps.conn.outputs.pass }}" \
+            -locations="filesystem:/flyway/sql" \
+            -validateMigrationNaming=true \
+            -ignoreMigrationPatterns='*:pending' \
+            validate
+
+      - name: Flyway migrate
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}/${MIGRATIONS_DIR}:/flyway/sql:ro" \
+            "${FLYWAY_IMAGE}" \
+            -url="${{ steps.conn.outputs.jdbc }}" \
+            -user="${{ steps.conn.outputs.user }}" \
+            -password="${{ steps.conn.outputs.pass }}" \
+            -locations="filesystem:/flyway/sql" \
+            -baselineOnMigrate=true \
+            -baselineVersion=1 \
+            -baselineDescription="Library schema baseline" \
+            -outOfOrder=false \
+            -cleanDisabled=true \
+            migrate
+
+      - name: Flyway info (after)
+        if: always()
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}/${MIGRATIONS_DIR}:/flyway/sql:ro" \
+            "${FLYWAY_IMAGE}" \
+            -url="${{ steps.conn.outputs.jdbc }}" \
+            -user="${{ steps.conn.outputs.user }}" \
+            -password="${{ steps.conn.outputs.pass }}" \
+            -locations="filesystem:/flyway/sql" \
+            info
+
+      - name: Run summary
+        if: always()
+        run: |
+          {
+            echo "## Flyway | result"
+            echo ""
+            echo "| Field | Value |"
+            echo "|---|---|"
+            echo "| Target | Neon · branch \`main\` |"
+            echo "| Image | \`${FLYWAY_IMAGE}\` |"
+            echo "| Migrations | \`${MIGRATIONS_DIR}\` |"
+            echo "| Commit | \`${{ github.sha }}\` |"
+            echo "| Status | \`${{ job.status }}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
