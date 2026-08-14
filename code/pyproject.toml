@@ -1,0 +1,8 @@
+[project]
+name = "data-generation"
+version = "0.1.0"
+description = "Genera datos sinteticos para el modelo de biblioteca y produce la migracion V__seed_data.sql"
+requires-python = ">=3.12"
+dependencies = [
+    "Faker==37.4.0",
+]

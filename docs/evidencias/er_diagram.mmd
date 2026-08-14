@@ -1,0 +1,100 @@
+erDiagram
+    authors {
+        int id PK
+        string name
+        string place_of_birth
+        string nationality
+        date birth_date
+        date death_date
+    }
+
+    categories {
+        int id PK
+        string name
+        string description
+    }
+
+    books {
+        int id PK
+        string title
+        string isbn
+        string original_language
+    }
+
+    book_author {
+        int book_id PK, FK
+        int author_id PK, FK
+    }
+
+    book_category {
+        int book_id PK, FK
+        int category_id PK, FK
+    }
+
+    editions {
+        int id PK
+        int book_id FK
+        string publisher
+        int release_year
+        int page_count
+        string language
+        decimal replacement_cost
+    }
+
+    copies {
+        int id PK
+        int edition_id FK
+        string inventory_code
+        string status "available, loaned or damaged"
+        date acquired_at
+        string physical_location
+    }
+
+    users {
+        int id PK
+        string name
+        date registered_at
+        string status "active or inactive"
+        date birth_date
+        string email
+        string phone
+    }
+
+    librarians {
+        int id PK
+        string name
+        date hired_at
+        string status "active or inactive"
+        string email
+        string role
+    }
+
+    loans {
+        int id PK
+        int copy_id FK
+        int user_id FK
+        int librarian_id FK
+        date loan_date
+        date due_date
+        date returned_at
+    }
+
+    penalties {
+        int id PK
+        int loan_id FK
+        string reason
+        date issued_at
+        decimal fee
+        boolean paid
+    }
+
+    authors ||--o{ book_author : writes
+    books ||--o{ book_author : has
+    categories ||--o{ book_category : classifies
+    books ||--o{ book_category : has
+    books ||--o{ editions : has
+    editions ||--o{ copies : has
+    copies ||--o{ loans : loaned_in
+    users ||--o{ loans : requests
+    librarians ||--o{ loans : manages
+    loans ||--o{ penalties : generates
