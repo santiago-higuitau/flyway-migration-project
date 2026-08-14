@@ -1,3 +1,4 @@
+
 WITH users_no_phone AS (
   SELECT id, row_number() over() as position_id
   FROM users
