@@ -2,6 +2,7 @@
 -- Generado por code/data_generation.py (semilla Faker/random = 20260811).
 -- No se conecta a ninguna base: solo produce las sentencias INSERT que
 -- Flyway aplica como cualquier otra migracion versionada.
+
 INSERT INTO authors (name, place_of_birth, nationality, birth_date, death_date) VALUES
     ('Claudia Yolanda Galvis', 'Palmar', 'United States', '1991-07-17', NULL),
     ('Amy Lewis', 'Darrylchester', 'United States', '1939-02-17', NULL),
