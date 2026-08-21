@@ -1,7 +1,7 @@
 # Flyway Migrate | applies pending migrations to Neon `main` on push.
 # Required secret: NEON_MAIN_DATABASE_URL (postgresql://user:pass@host/db?sslmode=require)
 
-name: Flyway Migrate
+name: Flyway Migrate Pdn
 
 on:
   push:
