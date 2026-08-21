@@ -80,6 +80,7 @@ jobs:
 
       # Catches checksum mismatches before touching the database.
       - name: Flyway validate
+        id: flyway_validation
         run: |
           docker run --rm \
             -v "${{ github.workspace }}/${MIGRATIONS_DIR}:/flyway/sql:ro" \
@@ -91,4 +92,20 @@ jobs:
             -validateMigrationNaming=true \
             -ignoreMigrationPatterns='*:pending' \
             validate
-  
+
+      # Summary Step
+      - name: Run Summary
+        if: always()
+        run: |
+          {
+            echo "## Flyway PR check | result"
+            echo ""
+            echo "| Field | Value |"
+            echo "|---|---|"
+            echo "| PR | #${{ github.event.pull_request.number }} |"
+            echo "| Target | Neon · branch \`main\` |"
+            echo "| Image | \`${FLYWAY_IMAGE}\` |"
+            echo "| Migrations | \`${MIGRATIONS_DIR}\` |"
+            echo "| Checksum drift | \`${{ steps.flyway_validation.outcome == 'success' && 'no detectado' || 'POSIBLE -> revisar log de validate' }}\` |"
+            echo "| Status del job | \`${{ job.status }}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -320,22 +320,28 @@ que un status check específico pase antes de permitir el merge.
 - [X] Activar "Require a pull request before merging" (approvals desactivado
       por decisión propia, para no bloquearse mientras se trabaja en
       solitario — se puede reactivar más adelante con los 2 colaboradores).
-- [ ] Marcar el `name` exacto del job de `flyway-pr-check.yml` como
-      *required status check* — **pendiente**: GitHub solo ofrece checks que
-      ya corrieron en los últimos 7 días, y `flyway-pr-check.yml` nunca se ha
-      disparado todavía. Se completa después del Módulo B3 (primer PR de
-      prueba), volviendo a esta pantalla a seleccionar el check.
-- [ ] (Opcional) Activar "Do not allow bypassing the above settings" si se
+- [X] Marcar el `name` exacto del job de `flyway-pr-check.yml`
+      (`Info and validation to Neon (main)`) como *required status check* —
+      apareció en el buscador después de la primera corrida real generada
+      en el Módulo B3.
+- [X] Activar "Require branches to be up to date before merging" — decisión
+      propia, dado que ya hay 2 colaboradores y el repo versiona esquema de
+      base de datos (evita mergear contra una versión vieja de `main`).
+- [X] (Opcional) Activar "Do not allow bypassing the above settings" si se
       quiere que aplique incluso a administradores del repo.
 
 **Criterio de aceptación:** intentar un `git push` directo a `main` desde local
 debe ser rechazado por GitHub, o el PR no debe poder mergearse si
 `flyway-pr-check` falló o no corrió.
 
-Notas: regla creada sobre `main`, "Currently applies to 1 branch". Require
-status checks activado pero sin check seleccionable aún (0 corridas
-previas). Approvals desactivado por ahora aunque el repo tiene 2
-colaboradores — se puede reactivar después.
+Notas: regla creada sobre `main`, "Currently applies to 1 branch". Check
+`Info and validation to Neon (main)` (GitHub Actions) agregado como required
+tras la primera corrida real del Módulo B3. Approvals desactivado por ahora
+aunque el repo tiene 2 colaboradores — se puede reactivar después. También se
+agregó un step de "Run Summary" a `flyway-pr-check.yml` (con `id:
+flyway_validation` en el step de validate, referenciado como
+`steps.flyway_validation.outcome` en el summary) para mostrar PR, target,
+resultado de drift y status del job en `$GITHUB_STEP_SUMMARY`.
 
 ---
 
@@ -345,13 +351,13 @@ colaboradores — se puede reactivar después.
 gate (sin migrate) → merge → `main` real.
 
 **Tarea:**
-- [ ] Crear branch `feature/prueba-workshop`.
-- [ ] Agregar una migración SQL trivial (ej. un comentario o índice inofensivo)
+- [X] Crear branch `feature/prueba-workshop`.
+- [X] Agregar una migración SQL trivial (ej. un comentario o índice inofensivo)
       y hacer push.
-- [ ] Confirmar en la pestaña Actions que se disparó `flyway-migrate-dev.yml`
+- [X] Confirmar en la pestaña Actions que se disparó `flyway-migrate-dev.yml`
       y que migró contra `dev`.
-- [ ] Abrir PR de `feature/prueba-workshop` hacia `main`.
-- [ ] Confirmar que se disparó `flyway-pr-check.yml` (info + validate) y NO
+- [X] Abrir PR de `feature/prueba-workshop` hacia `main`.
+- [X] Confirmar que se disparó `flyway-pr-check.yml` (info + validate) y NO
       `flyway-migrate-pdn.yml`.
 - [ ] Mergear el PR.
 - [ ] Confirmar que el merge (push resultante a `main`) disparó
