@@ -1,27 +1,29 @@
-# Flyway Migrate | applies pending migrations to Neon `main` on push.
+# Flyway Validation | applies info and validation before migrations to Neon `main`.
 # Required secret: NEON_MAIN_DATABASE_URL (postgresql://user:pass@host/db?sslmode=require)
 
-name: Flyway Migrate
+name: Flyway validation pre-migration
 
 on:
-  push:
-    branches: [main]
+  pull_request:
+    branches:
+      - main
     paths:
       - 'sql_migrations/**'
-      - '.github/workflows/flyway-migrate.yml'
+      - '.github/workflows/flyway-pr-check.yml'
+
   workflow_dispatch:
 
 concurrency:
-  group: flyway-production
-  cancel-in-progress: false
+  group: flyway-pr-check-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 env:
   FLYWAY_IMAGE: flyway/flyway:13.1.0-alpine
   MIGRATIONS_DIR: sql_migrations
 
 jobs:
-  migrate:
-    name: Apply migrations to Neon (main)
+  info_and_validation:
+    name: Info and validation to Neon (main)
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -78,6 +80,7 @@ jobs:
 
       # Catches checksum mismatches before touching the database.
       - name: Flyway validate
+        id: flyway_validation
         run: |
           docker run --rm \
             -v "${{ github.workspace }}/${MIGRATIONS_DIR}:/flyway/sql:ro" \
@@ -90,45 +93,19 @@ jobs:
             -ignoreMigrationPatterns='*:pending' \
             validate
 
-      - name: Flyway migrate
-        run: |
-          docker run --rm \
-            -v "${{ github.workspace }}/${MIGRATIONS_DIR}:/flyway/sql:ro" \
-            "${FLYWAY_IMAGE}" \
-            -url="${{ steps.conn.outputs.jdbc }}" \
-            -user="${{ steps.conn.outputs.user }}" \
-            -password="${{ steps.conn.outputs.pass }}" \
-            -locations="filesystem:/flyway/sql" \
-            -baselineOnMigrate=true \
-            -baselineVersion=1 \
-            -baselineDescription="Library schema baseline" \
-            -outOfOrder=false \
-            -cleanDisabled=true \
-            migrate
-
-      - name: Flyway info (after)
-        if: always()
-        run: |
-          docker run --rm \
-            -v "${{ github.workspace }}/${MIGRATIONS_DIR}:/flyway/sql:ro" \
-            "${FLYWAY_IMAGE}" \
-            -url="${{ steps.conn.outputs.jdbc }}" \
-            -user="${{ steps.conn.outputs.user }}" \
-            -password="${{ steps.conn.outputs.pass }}" \
-            -locations="filesystem:/flyway/sql" \
-            info
-
-      - name: Run summary
+      # Summary Step
+      - name: Run Summary
         if: always()
         run: |
           {
-            echo "## Flyway | result"
+            echo "## Flyway PR check | result"
             echo ""
             echo "| Field | Value |"
             echo "|---|---|"
+            echo "| PR | #${{ github.event.pull_request.number }} |"
             echo "| Target | Neon · branch \`main\` |"
             echo "| Image | \`${FLYWAY_IMAGE}\` |"
             echo "| Migrations | \`${MIGRATIONS_DIR}\` |"
-            echo "| Commit | \`${{ github.sha }}\` |"
-            echo "| Status | \`${{ job.status }}\` |"
+            echo "| Checksum drift | \`${{ steps.flyway_validation.outcome == 'success' && 'no detectado' || 'POSIBLE -> revisar log de validate' }}\` |"
+            echo "| Status del job | \`${{ job.status }}\` |"
           } >> "$GITHUB_STEP_SUMMARY"
