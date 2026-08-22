@@ -21,6 +21,7 @@ dist/
 .ruff_cache/
 .mypy_cache/
 .ipynb_checkpoints/
+backup/
 
 # uv
 # NOTA: uv.lock SÍ se versiona (garantiza builds reproducibles). No lo ignores.
