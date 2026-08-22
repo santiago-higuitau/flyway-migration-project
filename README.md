@@ -1,9 +1,13 @@
-# Sistema de biblioteca | CI/CD de base de datos con Flyway
+# Sistema de biblioteca | CI/CD de base de datos con Flyway + Cloud DW en Snowflake
 
-Este repo es el entregable del Momento 1 (CI/CD en Base de Datos). La idea de fondo:
-el esquema de la base de datos vive versionado en git, igual que el código, y los
-cambios llegan a producción (branch `main` de Neon) solo a través de un pipeline
-automatizado de ci-cd.
+Este repo cubre dos entregables sobre el mismo dominio (biblioteca):
+
+- **Momento 1** (CI/CD en Base de Datos): el esquema vive versionado en git, y
+  los cambios llegan a producción (branch `main` de Neon) solo a través de un
+  pipeline automatizado. Ver secciones de Flyway más abajo.
+- **Momento 2** (Cloud Data Warehouse e Ingesta): los datos de Neon se mueven a
+  Snowflake, tanto relacionales como semi-estructurados, con Tasks, RBAC y
+  Masking. Ver [Momento 2 — Snowflake](#momento-2--snowflake) más abajo.
 
 El dominio elegido fue biblioteca. Para entender el modelo completo (por
 qué separamos libros de ediciones y de copias, por qué usuarios y bibliotecarios
@@ -191,3 +195,57 @@ tener una fila en cada tabla sin que eso implique relación entre sí.
 Porque decidimos que todo el estado inicial —esquema y datos— viviera como
 migraciones de Flyway normales, para que `dev` y `main` se levanten exactamente
 igual, sin pasos manuales de por medio.
+
+---
+
+## Momento 2 -- Snowflake
+
+Los datos de Neon se ingieren en un Data Warehouse en Snowflake
+(`LIBRARY_DW`), desde dos fuentes: la base relacional (vía Flyway, ya
+existente) y una fuente semi-estructurada nueva (reseñas de lectores en
+JSON). El razonamiento detrás de cada decisión está en
+[`docs/decisiones_momento_2.md`](docs/decisiones_momento_2.md).
+
+### Estructura
+
+```
+snowflake/scripts/                   Scripts SQL numerados en orden de ejecucion (00-10)
+code/elt_neon_to_library_dw.py       Ingesta relacional: Neon -> LIBRARY_DW.RAW
+code/generate_book_reviews_json.py   Genera los 5 JSON de resenas de lectores
+data/json/                           Los 5 archivos JSON generados (fuente semi-estructurada)
+```
+
+### Orden de ejecución
+
+| Script | Qué hace |
+|---|---|
+| `00_cleanup_total.sql` | Borra todo lo creado, para volver a correr desde cero |
+| `01_setup_library_dw.sql` | Warehouse, base, esquema `RAW`, rol de servicio |
+| — | `uv run elt_neon_to_library_dw.py --entorno dev` puebla `RAW` con las 11 tablas de Neon |
+| `02_fix_schema_drift_authors.sql` | Fix del drift al agregar una columna en Neon sin avisar a Snowflake primero |
+| `03_setup_stage_book_reviews.sql` | Esquema `BOOK_REVIEWS`, File Format JSON, External Stage sobre el bucket S3 |
+| `04_copy_into_raw_reviews.sql` | Carga el JSON crudo a `RAW_REVIEWS` (columna `VARIANT`) |
+| `05_flatten_reviews_to_staging.sql` | `LATERAL FLATTEN` sobre `reviews` y `tags`, materializado en `STG_BOOK_REVIEWS_FLATTENED` |
+| `06_create_tasks_dag.sql` | DAG de 2 tareas: ingesta (root, `SCHEDULE`) + aplanado (hija, `AFTER`) |
+| `07_resume_tasks.sql` | Activa el DAG, dispara manualmente, consulta `TASK_HISTORY`, apaga |
+| `08_create_roles_and_grants.sql` | 3 roles de negocio con acceso diferenciado real |
+| `08b_validate_access_denied.sql` | Confirma que los accesos restringidos fallan de verdad |
+| `09_masking_policy_users.sql` | Masking Policy sobre `USERS.PHONE`/`EMAIL`, con las 4 vistas de rol |
+| `10_final_validation.sql` | Verificación de cierre de todo lo anterior |
+
+Cada script fija su propio `USE ROLE` / `USE WAREHOUSE` / `USE DATABASE` /
+`USE SCHEMA` al inicio; no depende del contexto que haya quedado del
+script anterior.
+
+### Ingesta relacional
+
+```bash
+cd code
+uv run elt_neon_to_library_dw.py --entorno dev
+```
+
+Extrae de la branch `dev` de Neon (`--entorno main` para apuntar a producción)
+y carga en `LIBRARY_DW.RAW` con `write_pandas`. Detecta schema drift
+comparando columnas del origen contra el destino antes de cargar: si Neon
+trae una columna que Snowflake no tiene, falla con el DDL sugerido en vez de
+dejar que la carga reviente sin alguna explicación.

@@ -15,8 +15,10 @@ EXECUTE TASK TASK_INGEST_S3;
 -- Ver el resultado (esperar unos segundos; deben aparecer ambas tasks).
 SELECT name, state, scheduled_time, completed_time, error_message
 FROM TABLE(INFORMATION_SCHEMA.TASK_HISTORY())
+WHERE name IN ('TASK_INGEST_S3', 'TASK_FLATTEN_REVIEWS')
 ORDER BY scheduled_time DESC
-LIMIT 20;
+LIMIT 10;
+
 
 -- Apagar siempre raíz primero. Al reves fallaría con error.
 ALTER TASK TASK_INGEST_S3     SUSPEND;

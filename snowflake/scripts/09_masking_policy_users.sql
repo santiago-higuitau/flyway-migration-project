@@ -28,21 +28,25 @@ FROM TABLE(INFORMATION_SCHEMA.POLICY_REFERENCES(
     REF_ENTITY_DOMAIN => 'TABLE'
 ));
 
--- Ve TODO
+-- Ve todo: telefono y el email
 USE ROLE ROLE_DATA_ENGINEER;
+USE SECONDARY ROLES NONE;
 SELECT name, email, phone FROM USERS ORDER BY name;
 
--- Ve el telefono PARCIAL, y el email oculto
+-- Ve el telefono parcial, y el email oculto
 USE ROLE ROLE_DATA_ANALYST;
+USE SECONDARY ROLES NONE;
 SELECT name, email, phone FROM USERS ORDER BY name;
 
--- No ve NADA sensible
+-- No ve nada sensible
 USE ROLE ROLE_BUSINESS_MANAGER;
+USE SECONDARY ROLES NONE;
 SELECT name, email, phone FROM USERS ORDER BY name;
 
 USE ROLE ACCOUNTADMIN;
+USE SECONDARY ROLES ALL;
 
--- Caso del ELSE: un rol NO nombrado en la politica tambien queda protegido
+-- Caso del ELSE: un rol no nombrado en la politica tambien queda protegido
 CREATE ROLE IF NOT EXISTS ROLE_PASANTE
     COMMENT = 'Rol de prueba, no mencionado en la masking policy, para demostrar default-deny';
 GRANT USAGE ON WAREHOUSE WH_LIBRARY TO ROLE ROLE_PASANTE;
@@ -52,6 +56,8 @@ GRANT SELECT ON TABLE USERS TO ROLE ROLE_PASANTE;
 GRANT ROLE ROLE_PASANTE TO USER SHIGUITAU1030;
 
 USE ROLE ROLE_PASANTE;
+USE SECONDARY ROLES NONE;
 SELECT name, email, phone FROM USERS ORDER BY name;  -- cae en el ELSE, sin cambiar la politica
 
 USE ROLE ACCOUNTADMIN;
+USE SECONDARY ROLES ALL;
