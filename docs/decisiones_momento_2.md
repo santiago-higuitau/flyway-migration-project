@@ -1,8 +1,51 @@
 # Momento 2 | Cloud Data Warehouse e Ingesta: documento de decisiones
 
-Este archivo acompaña el entregable en `snowflake/scripts/`. Aquí 
-se explica el **por qué** de las decisiones tomadas; el **qué** está en el código, comentado donde hace
-falta.
+Este archivo acompaña el entregable en `snowflake/scripts/`. La primera
+sección es el recap para armar la presentación; el resto explica el **por
+qué** de cada decisión (el **qué** está en el código, comentado donde hace
+falta).
+
+## Resumen ejecutivo
+
+El Momento 1 dejó la base de datos del proyecto biblioteca en Neon, versionada
+con Flyway y desplegada mediante un pipeline de tres etapas: `feature/*` migra
+automáticamente contra `dev`, un Pull Request valida contra `main` sin aplicar
+cambios, y el merge, una vez pase el workflow de validación, dispara el despliegue real. Esa es la base sobre la cual se construyó el momento 2.
+
+El objetivo de este momento es mover esos datos a un Cloud Data Warehouse en
+Snowflake de forma programática y gobernada, desde dos formas de origen
+distintas: los datos relacionales que ya existen en Neon, y una fuente
+semi-estructurada nueva que no tiene esquema fijo.
+
+---
+
+## Arquitectura
+
+Un warehouse (`WH_LIBRARY`, XSMALL con auto-suspend), una
+base de datos (`LIBRARY_DW`) con dos esquemas separados por dominio (`RAW`
+para lo relacional, `BOOK_REVIEWS` para el JSON), y un rol de servicio
+(`LIBRARY_LOADER`) sin privilegios de administrador. Todo creado por scripts en Snowflake.
+
+## Ingesta relacional
+
+Un pipeline ELT (extrae sin transformar) que carga las
+11 tablas del dominio biblioteca desde Neon hacia `LIBRARY_DW.RAW`, con carga
+masiva vía `write_pandas`. Antes de cargar, compara las columnas del origen
+contra las del destino: si Neon tiene una columna que Snowflake no conoce
+todavía, el pipeline se detiene con el DDL que resolvería la diferencia, en
+vez de fallar a ciegas. Se demostró con un caso real, donde se agregó una columna
+nueva en Neon, la carga falló como se esperaba, luego se aplicó el ajuste sugerido
+en Snowflake, y la siguiente carga de la tabla terminó sin error.
+
+## Orquestación
+
+Un flujo de dos tareas nativas de Snowflake: una tarea raíz
+programada por horario que reingesta el bucket (un FULL LOAD DATA), y una tarea hija, encadenada
+a la anterior, que recalcula el aplanado. Se activó el flujo completo, se
+disparó manualmente, se confirmó su ejecución exitosa en el historial de
+tareas de Snowflake, y se apagó respetando el orden correcto visto en clase: la raíz
+primero, porque Snowflake no permite suspender una tarea hija mientras la
+raíz sigue activa.
 
 ## Fuente semi-estructurada elegida
 
@@ -85,4 +128,4 @@ un ajuste de sesión.
 Se agregó la columna `website` a `authors` en Neon (branch `dev`) sin tocar
 Snowflake primero. Al correr la ingesta, el script detectó la columna nueva y
 falló con el DDL sugerido, sin escribir nada. Se aplicó el `ALTER TABLE` en
-Snowflake y se reintentó: cargó sin error.
+Snowflake y se reintentó, cargando sin error.
