@@ -5,4 +5,8 @@ description = "Genera datos sinteticos para el modelo de biblioteca y produce la
 requires-python = ">=3.12"
 dependencies = [
     "Faker==37.4.0",
+    "psycopg2-binary==2.9.10",
+    "snowflake-connector-python[pandas]==3.14.0",
+    "pandas==2.2.3",
+    "python-dotenv==1.0.1",
 ]

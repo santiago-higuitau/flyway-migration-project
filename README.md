@@ -1,9 +1,13 @@
-# Sistema de biblioteca | CI/CD de base de datos con Flyway
+# Sistema de biblioteca | CI/CD de base de datos con Flyway + Cloud DW en Snowflake
 
-Este repo es el entregable del Momento 1 (CI/CD en Base de Datos). La idea de fondo:
-el esquema de la base de datos vive versionado en git, igual que el código, y los
-cambios llegan a producción (branch `main` de Neon) solo a través de un pipeline
-automatizado de ci-cd.
+Este repo cubre dos entregables sobre el mismo dominio (biblioteca):
+
+- **Momento 1** (CI/CD en Base de Datos): el esquema vive versionado en git, y
+  los cambios llegan a producción (branch `main` de Neon) solo a través de un
+  pipeline automatizado. Ver secciones de Flyway más abajo.
+- **Momento 2** (Cloud Data Warehouse e Ingesta): los datos de Neon se mueven a
+  Snowflake, tanto relacionales como semi-estructurados, con Tasks, RBAC y
+  Masking. Ver [Momento 2 — Snowflake](#momento-2--snowflake) más abajo.
 
 El dominio elegido fue biblioteca. Para entender el modelo completo (por
 qué separamos libros de ediciones y de copias, por qué usuarios y bibliotecarios
@@ -93,32 +97,62 @@ comparar el diff en git si algo cambia en el script.
 
 ## Cómo se despliega a main
 
-La idea es que nadie se conecte manualmente a la branch `main`. Sino que cada vez que se haga push a `main`
-en el repo de GitHub, tocando algo dentro de `sql_migrations/`, se dispara el workflow
-[`flyway-migrate.yml`](.github/workflows/flyway-migrate.yml), que:
+Nadie se conecta manualmente a la branch `main`, y nadie hace push directo a
+`main` tampoco: una branch protection rule lo exige. El despliegue real pasa
+por tres etapas, cada una con su propio workflow:
 
-1. Traduce el connection string de Neon al formato que Flyway necesita.
-2. Corre `flyway info` para ver qué hay pendiente.
-3. Corre `flyway validate` para asegurarse de que nadie editó una migración ya
-   aplicada.
-4. Corre `flyway migrate`.
-5. Deja un resumen del resultado en la pestaña Actions del repo.
+**1. `feature/*` → `dev` automático.** Cada push a una branch `feature/**`
+que toque `sql_migrations/` dispara
+[`flyway-migrate-dev.yml`](.github/workflows/flyway-migrate-dev.yml): traduce
+el connection string, corre `flyway info` → `validate` → `migrate` →
+`info`, contra la branch **dev** de Neon. Así cada feature deja `dev`
+actualizado y detecta errores de migración temprano, antes de siquiera abrir
+un PR.
 
-Para que esto funcione, hay que configurar un secreto en el repo:
+**2. Pull Request hacia `main` → gate, sin aplicar nada.** Abrir (o
+actualizar) un PR contra `main` dispara
+[`flyway-pr-check.yml`](.github/workflows/flyway-pr-check.yml), que corre
+únicamente `flyway info` + `flyway validate` contra **main** — nunca
+`migrate`. `validate` compara el checksum de cada migración ya aplicada
+contra el archivo en el repo: si alguien editó una migración que ya corrió
+(en vez de agregar una nueva, ver la sección de roll-forward más abajo), el
+checksum no coincide y el check falla. Este check está marcado como
+**required status check** en la branch protection rule de `main`, así que un
+PR no se puede mergear si no pasa. El resultado (número de PR, si se detectó
+drift de checksum, status del job) queda además en el summary del run, en la
+pestaña Actions.
+
+**3. Merge a `main` → despliegue real.** El merge de un PR aprobado genera un
+push a `main`, que dispara
+[`flyway-migrate-pdn.yml`](.github/workflows/flyway-migrate-pdn.yml) — el
+único workflow que corre `flyway migrate` de verdad contra la branch **main**
+de Neon. Corre `info` → `validate` → `migrate` → `info`, y deja un resumen
+del resultado en la pestaña Actions.
+
+Para que ambos workflows contra `main` funcionen, hay que configurar un
+secreto en el repo:
 
 **Settings → Secrets and variables → Actions → New repository secret**
 
 | Nombre | Valor |
 |---|---|
 | `NEON_MAIN_DATABASE_URL` | El connection string completo de la branch **main** de Neon |
+| `NEON_DEV_DATABASE_URL` | El connection string completo de la branch **dev** de Neon (para `flyway-migrate-dev.yml`) |
+
+La branch protection rule de `main` (**Settings → Branches**) exige PR antes
+de mergear y que el check `Info and validation to Neon (main)` pase en verde,
+además de que la branch esté al día con `main` antes de mergear.
 
 ## Cómo agregar una migración nueva
 
 1. Crea el archivo en `sql_migrations/` siguiendo el nombre `V<timestamp>__descripcion.sql`
    para cambios de estructura (crear tabla, agregar columna, índice), o
    `R__descripcion.sql` para funciones, store procedures o vistas.
-2. Pruébala primero contra `dev`, corriendo `flyway migrate` en la terminal.
-3. Cuando funcione, haz commit y push a `main`. El pipeline ci-cd correrá de manera automática toda la migration.
+2. Haz push a una branch `feature/*` — el pipeline la migra automáticamente
+   contra `dev`, sin pasos manuales.
+3. Abre un PR hacia `main`. El gate corre `info` + `validate` contra `main`
+   (sin aplicar nada) y debe pasar antes de poder mergear.
+4. Al mergear, el pipeline aplica la migración contra `main` de verdad.
 
 ## El error real y cómo se corrigió
 
@@ -161,3 +195,57 @@ tener una fila en cada tabla sin que eso implique relación entre sí.
 Porque decidimos que todo el estado inicial —esquema y datos— viviera como
 migraciones de Flyway normales, para que `dev` y `main` se levanten exactamente
 igual, sin pasos manuales de por medio.
+
+---
+
+## Momento 2 -- Snowflake
+
+Los datos de Neon se ingieren en un Data Warehouse en Snowflake
+(`LIBRARY_DW`), desde dos fuentes: la base relacional (vía Flyway, ya
+existente) y una fuente semi-estructurada nueva (reseñas de lectores en
+JSON). El razonamiento detrás de cada decisión está en
+[`docs/decisiones_momento_2.md`](docs/decisiones_momento_2.md).
+
+### Estructura
+
+```
+snowflake/scripts/                   Scripts SQL numerados en orden de ejecucion (00-10)
+code/elt_neon_to_library_dw.py       Ingesta relacional: Neon -> LIBRARY_DW.RAW
+code/generate_book_reviews_json.py   Genera los 5 JSON de resenas de lectores
+data/json/                           Los 5 archivos JSON generados (fuente semi-estructurada)
+```
+
+### Orden de ejecución
+
+| Script | Qué hace |
+|---|---|
+| `00_cleanup_total.sql` | Borra todo lo creado, para volver a correr desde cero |
+| `01_setup_library_dw.sql` | Warehouse, base, esquema `RAW`, rol de servicio |
+| — | `uv run elt_neon_to_library_dw.py --entorno dev` puebla `RAW` con las 11 tablas de Neon |
+| `02_fix_schema_drift_authors.sql` | Fix del drift al agregar una columna en Neon sin avisar a Snowflake primero |
+| `03_setup_stage_book_reviews.sql` | Esquema `BOOK_REVIEWS`, File Format JSON, External Stage sobre el bucket S3 |
+| `04_copy_into_raw_reviews.sql` | Carga el JSON crudo a `RAW_REVIEWS` (columna `VARIANT`) |
+| `05_flatten_reviews_to_staging.sql` | `LATERAL FLATTEN` sobre `reviews` y `tags`, materializado en `STG_BOOK_REVIEWS_FLATTENED` |
+| `06_create_tasks_dag.sql` | DAG de 2 tareas: ingesta (root, `SCHEDULE`) + aplanado (hija, `AFTER`) |
+| `07_resume_tasks.sql` | Activa el DAG, dispara manualmente, consulta `TASK_HISTORY`, apaga |
+| `08_create_roles_and_grants.sql` | 3 roles de negocio con acceso diferenciado real |
+| `08b_validate_access_denied.sql` | Confirma que los accesos restringidos fallan de verdad |
+| `09_masking_policy_users.sql` | Masking Policy sobre `USERS.PHONE`/`EMAIL`, con las 4 vistas de rol |
+| `10_final_validation.sql` | Verificación de cierre de todo lo anterior |
+
+Cada script fija su propio `USE ROLE` / `USE WAREHOUSE` / `USE DATABASE` /
+`USE SCHEMA` al inicio; no depende del contexto que haya quedado del
+script anterior.
+
+### Ingesta relacional
+
+```bash
+cd code
+uv run elt_neon_to_library_dw.py --entorno dev
+```
+
+Extrae de la branch `dev` de Neon (`--entorno main` para apuntar a producción)
+y carga en `LIBRARY_DW.RAW` con `write_pandas`. Detecta schema drift
+comparando columnas del origen contra el destino antes de cargar: si Neon
+trae una columna que Snowflake no tiene, falla con el DDL sugerido en vez de
+dejar que la carga reviente sin alguna explicación.

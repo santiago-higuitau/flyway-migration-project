@@ -1,0 +1,629 @@
+[
+  {
+    "book_id": 66,
+    "isbn": "978789895289",
+    "title": "El Sombra de Christopher",
+    "export_batch_id": "lote-2026-06",
+    "generated_at": "2026-06-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-3-0001",
+        "reviewer_name": "Lisa Owens",
+        "rating": 2,
+        "comment": "Perfecto para quienes disfrutan un ritmo pausado.",
+        "submitted_at": "2026-08-03",
+        "verified_loan": true,
+        "tags": [
+          "final-inesperado"
+        ]
+      },
+      {
+        "review_id": "REV-3-0002",
+        "reviewer_name": "Eugenia María León Carrillo",
+        "rating": 5,
+        "comment": "La edicion tiene varias erratas que distraen la lectura.",
+        "submitted_at": "2026-06-23",
+        "verified_loan": false,
+        "tags": [
+          "ritmo-lento"
+        ]
+      },
+      {
+        "review_id": "REV-3-0003",
+        "reviewer_name": "David Keller",
+        "rating": 4,
+        "comment": "El final me dejo pensando varios dias.",
+        "submitted_at": "2026-07-23",
+        "verified_loan": true,
+        "tags": [
+          "traduccion-mejorable",
+          "para-releer"
+        ]
+      },
+      {
+        "review_id": "REV-3-0004",
+        "reviewer_name": "Francisco Jiménez",
+        "rating": 5,
+        "comment": "No lo recomendaria, se sintio muy predecible.",
+        "submitted_at": "2026-08-01",
+        "verified_loan": true
+      },
+      {
+        "review_id": "REV-3-0005",
+        "reviewer_name": "Jimmy Moreno Martínez",
+        "rating": 4,
+        "comment": "La trama se siente repetitiva hacia la mitad del libro.",
+        "submitted_at": "2026-05-26",
+        "verified_loan": false,
+        "tags": [
+          "denso",
+          "traduccion-mejorable"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 25,
+    "isbn": "978716293811",
+    "title": "The Winter of Jorge",
+    "export_batch_id": "lote-2026-06",
+    "generated_at": "2026-06-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-3-0006",
+        "reviewer_name": "Richard Olson",
+        "rating": 4,
+        "comment": "Wished the secondary characters had more depth.",
+        "submitted_at": "2026-06-18",
+        "verified_loan": false,
+        "tags": [
+          "emotivo",
+          "para-releer",
+          "final-inesperado"
+        ]
+      },
+      {
+        "review_id": "REV-3-0007",
+        "reviewer_name": "Isabel García",
+        "rating": 5,
+        "comment": "Wouldn't recommend it, felt too predictable.",
+        "submitted_at": "2026-06-08",
+        "verified_loan": true,
+        "tags": [
+          "divertido",
+          "emotivo"
+        ]
+      },
+      {
+        "review_id": "REV-3-0008",
+        "reviewer_name": "Michael Trujillo",
+        "rating": 5,
+        "comment": "Great pick if you enjoy a slow-burn story.",
+        "submitted_at": "2026-06-13",
+        "verified_loan": true,
+        "tags": [
+          "para-releer"
+        ]
+      },
+      {
+        "review_id": "REV-3-0009",
+        "reviewer_name": "Juan Carlos Londoño",
+        "rating": 5,
+        "comment": "Wished the secondary characters had more depth.",
+        "submitted_at": "2026-06-05",
+        "verified_loan": true
+      },
+      {
+        "review_id": "REV-3-0010",
+        "reviewer_name": "John Griffith",
+        "rating": 4,
+        "comment": "Great pick if you enjoy a slow-burn story.",
+        "submitted_at": "2026-08-06",
+        "verified_loan": false,
+        "tags": [
+          "ritmo-agil",
+          "divertido"
+        ]
+      },
+      {
+        "review_id": "REV-3-0011",
+        "reviewer_name": "Kristine George",
+        "rating": 5,
+        "comment": "Wished the secondary characters had more depth.",
+        "submitted_at": "2026-07-08",
+        "verified_loan": false,
+        "tags": [
+          "recomendado",
+          "para-releer"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 71,
+    "isbn": "978583601844",
+    "title": "El Estrella de Brittany",
+    "export_batch_id": "lote-2026-06",
+    "generated_at": "2026-06-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-3-0012",
+        "reviewer_name": "William Richard",
+        "rating": 2,
+        "comment": "La trama se siente repetitiva hacia la mitad del libro.",
+        "submitted_at": "2026-08-05",
+        "verified_loan": false,
+        "tags": [
+          "traduccion-mejorable",
+          "bien-escrito",
+          "emotivo"
+        ]
+      },
+      {
+        "review_id": "REV-3-0013",
+        "reviewer_name": "Miguel Carvajal",
+        "rating": 4,
+        "comment": "Perfecto para quienes disfrutan un ritmo pausado.",
+        "submitted_at": "2026-06-24",
+        "verified_loan": true,
+        "tags": [
+          "denso",
+          "bien-escrito"
+        ]
+      },
+      {
+        "review_id": "REV-3-0014",
+        "reviewer_name": "Kelly Jones",
+        "rating": 5,
+        "comment": "Uno de los mejores que he leido este anio.",
+        "submitted_at": "2026-05-25",
+        "verified_loan": true,
+        "tags": [
+          "bien-escrito",
+          "sobrevalorado",
+          "ritmo-agil"
+        ]
+      },
+      {
+        "review_id": "REV-3-0015",
+        "reviewer_name": "Dora María Barrera Fernández",
+        "rating": 3,
+        "comment": "No lo recomendaria, se sintio muy predecible.",
+        "submitted_at": "2026-07-31",
+        "verified_loan": false,
+        "tags": [
+          "ritmo-lento"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 7,
+    "isbn": "978116550539",
+    "title": "The Journey of Yesid",
+    "export_batch_id": "lote-2026-06",
+    "generated_at": "2026-06-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-3-0016",
+        "reviewer_name": "Robert Boyle",
+        "rating": 4,
+        "comment": "This edition has a few distracting typos.",
+        "submitted_at": "2026-06-17",
+        "verified_loan": false
+      },
+      {
+        "review_id": "REV-3-0017",
+        "reviewer_name": "Anthony Hall",
+        "rating": 5,
+        "comment": "Great pick if you enjoy a slow-burn story.",
+        "submitted_at": "2026-07-19",
+        "verified_loan": true
+      },
+      {
+        "review_id": "REV-3-0018",
+        "reviewer_name": "Patricia Castro Giraldo",
+        "rating": 4,
+        "comment": "One of the best releases I've read this year.",
+        "submitted_at": "2026-07-25",
+        "verified_loan": true
+      },
+      {
+        "review_id": "REV-3-0019",
+        "reviewer_name": "Alfonso Quintero Rivera",
+        "rating": 4,
+        "comment": "The ending left me thinking for days.",
+        "submitted_at": "2026-08-11",
+        "verified_loan": true
+      },
+      {
+        "review_id": "REV-3-0020",
+        "reviewer_name": "Brian Burke",
+        "rating": 3,
+        "comment": "This edition has a few distracting typos.",
+        "submitted_at": "2026-07-27",
+        "verified_loan": true,
+        "tags": [
+          "emotivo",
+          "sobrevalorado"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 23,
+    "isbn": "978210599534",
+    "title": "The Silence of Aurelio",
+    "export_batch_id": "lote-2026-06",
+    "generated_at": "2026-06-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-3-0021",
+        "reviewer_name": "Doris Caicedo Soto",
+        "rating": 5,
+        "comment": "Great pick if you enjoy a slow-burn story.",
+        "submitted_at": "2026-08-11",
+        "verified_loan": true,
+        "tags": [
+          "emotivo",
+          "recomendado",
+          "para-releer"
+        ]
+      },
+      {
+        "review_id": "REV-3-0022",
+        "reviewer_name": "Michael Woods",
+        "rating": 4,
+        "comment": "Wished the secondary characters had more depth.",
+        "submitted_at": "2026-08-05",
+        "verified_loan": false,
+        "tags": [
+          "sobrevalorado",
+          "final-inesperado",
+          "para-releer"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 11,
+    "isbn": "978812944265",
+    "title": "The Winter of María",
+    "export_batch_id": "lote-2026-06",
+    "generated_at": "2026-06-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-3-0023",
+        "reviewer_name": "Jason Miller",
+        "rating": 3,
+        "comment": "Couldn't put it down, finished it in two days.",
+        "submitted_at": "2026-06-23",
+        "verified_loan": false,
+        "tags": [
+          "recomendado"
+        ]
+      },
+      {
+        "review_id": "REV-3-0024",
+        "reviewer_name": "Roy Smith",
+        "rating": 5,
+        "comment": "Great pick if you enjoy a slow-burn story.",
+        "submitted_at": "2026-06-14",
+        "verified_loan": false,
+        "tags": [
+          "bien-escrito",
+          "ritmo-lento",
+          "divertido"
+        ]
+      },
+      {
+        "review_id": "REV-3-0025",
+        "reviewer_name": "Rodney Mcmahon",
+        "rating": 5,
+        "comment": "Couldn't put it down, finished it in two days.",
+        "submitted_at": "2026-06-25",
+        "verified_loan": false
+      },
+      {
+        "review_id": "REV-3-0026",
+        "reviewer_name": "Juan Pittman",
+        "rating": 4,
+        "comment": "This edition has a few distracting typos.",
+        "submitted_at": "2026-07-14",
+        "verified_loan": false,
+        "tags": [
+          "bien-escrito",
+          "denso",
+          "final-inesperado"
+        ]
+      },
+      {
+        "review_id": "REV-3-0027",
+        "reviewer_name": "Julio Fabio Ariza Ortega",
+        "rating": 5,
+        "comment": "Couldn't put it down, finished it in two days.",
+        "submitted_at": "2026-06-05",
+        "verified_loan": false,
+        "tags": [
+          "denso",
+          "emotivo"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 78,
+    "isbn": "978075654741",
+    "title": "The Shadow of Amanda",
+    "export_batch_id": "lote-2026-06",
+    "generated_at": "2026-06-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-3-0028",
+        "reviewer_name": "Ricardo Héctor Villamizar Escobar",
+        "rating": 5,
+        "comment": "Great pick if you enjoy a slow-burn story.",
+        "submitted_at": "2026-07-10",
+        "verified_loan": true
+      },
+      {
+        "review_id": "REV-3-0029",
+        "reviewer_name": "José Santiago Zuluaga Aguirre",
+        "rating": 5,
+        "comment": "The ending left me thinking for days.",
+        "submitted_at": "2026-05-27",
+        "verified_loan": true
+      },
+      {
+        "review_id": "REV-3-0030",
+        "reviewer_name": "Larry Gonzalez",
+        "rating": 5,
+        "comment": "The pacing drags a lot in the middle section.",
+        "submitted_at": "2026-07-08",
+        "verified_loan": true,
+        "tags": [
+          "traduccion-mejorable",
+          "recomendado"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 69,
+    "isbn": "978953090463",
+    "title": "El Jardin de Alejandro",
+    "export_batch_id": "lote-2026-06",
+    "generated_at": "2026-06-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-3-0031",
+        "reviewer_name": "Luis González",
+        "rating": 5,
+        "comment": "Me atrapo desde el primer capitulo, no pude dejarlo.",
+        "submitted_at": "2026-07-24",
+        "verified_loan": true,
+        "tags": [
+          "ritmo-lento",
+          "traduccion-mejorable"
+        ]
+      },
+      {
+        "review_id": "REV-3-0032",
+        "reviewer_name": "Alejandro Héctor Vergara García",
+        "rating": 4,
+        "comment": "Esperaba mas desarrollo de los personajes secundarios.",
+        "submitted_at": "2026-06-04",
+        "verified_loan": true
+      },
+      {
+        "review_id": "REV-3-0033",
+        "reviewer_name": "Luz María Camacho",
+        "rating": 4,
+        "comment": "Esperaba mas desarrollo de los personajes secundarios.",
+        "submitted_at": "2026-07-13",
+        "verified_loan": true
+      }
+    ]
+  },
+  {
+    "book_id": 40,
+    "isbn": "978761953303",
+    "title": "The Silence of Carlos",
+    "export_batch_id": "lote-2026-06",
+    "generated_at": "2026-06-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-3-0034",
+        "reviewer_name": "Fernando Jorge Guerrero",
+        "rating": 4,
+        "comment": "Wished the secondary characters had more depth.",
+        "submitted_at": "2026-07-02",
+        "verified_loan": false,
+        "tags": [
+          "recomendado",
+          "ritmo-agil"
+        ]
+      },
+      {
+        "review_id": "REV-3-0035",
+        "reviewer_name": "Pamela Anderson",
+        "rating": 3,
+        "comment": "One of the best releases I've read this year.",
+        "submitted_at": "2026-08-10",
+        "verified_loan": true,
+        "tags": [
+          "bien-escrito",
+          "recomendado",
+          "para-releer"
+        ]
+      },
+      {
+        "review_id": "REV-3-0036",
+        "reviewer_name": "William Moore",
+        "rating": 5,
+        "comment": "One of the best releases I've read this year.",
+        "submitted_at": "2026-08-12",
+        "verified_loan": true
+      }
+    ]
+  },
+  {
+    "book_id": 50,
+    "isbn": "978183815405",
+    "title": "El Rio de Cristina",
+    "export_batch_id": "lote-2026-06",
+    "generated_at": "2026-06-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-3-0037",
+        "reviewer_name": "Rafael Harvey Rodríguez",
+        "rating": 5,
+        "comment": "Uno de los mejores que he leido este anio.",
+        "submitted_at": "2026-07-30",
+        "verified_loan": false,
+        "tags": [
+          "divertido",
+          "sobrevalorado",
+          "recomendado"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 15,
+    "isbn": "978449931733",
+    "title": "El Espejo de Hailey",
+    "export_batch_id": "lote-2026-06",
+    "generated_at": "2026-06-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-3-0038",
+        "reviewer_name": "Victoria Bradford",
+        "rating": 1,
+        "comment": "Perfecto para quienes disfrutan un ritmo pausado.",
+        "submitted_at": "2026-06-09",
+        "verified_loan": true,
+        "tags": [
+          "emotivo"
+        ]
+      },
+      {
+        "review_id": "REV-3-0039",
+        "reviewer_name": "Christian Lewis",
+        "rating": 5,
+        "comment": "Uno de los mejores que he leido este anio.",
+        "submitted_at": "2026-07-01",
+        "verified_loan": true
+      },
+      {
+        "review_id": "REV-3-0040",
+        "reviewer_name": "Diana Carmen Martínez Sierra",
+        "rating": 5,
+        "comment": "Esperaba mas desarrollo de los personajes secundarios.",
+        "submitted_at": "2026-07-09",
+        "verified_loan": true,
+        "tags": [
+          "ritmo-lento",
+          "final-inesperado",
+          "divertido"
+        ]
+      },
+      {
+        "review_id": "REV-3-0041",
+        "reviewer_name": "Tracey Flores",
+        "rating": 3,
+        "comment": "La edicion tiene varias erratas que distraen la lectura.",
+        "submitted_at": "2026-07-26",
+        "verified_loan": true
+      },
+      {
+        "review_id": "REV-3-0042",
+        "reviewer_name": "Julieth Claudia Rodríguez",
+        "rating": 3,
+        "comment": "La edicion tiene varias erratas que distraen la lectura.",
+        "submitted_at": "2026-06-12",
+        "verified_loan": false,
+        "tags": [
+          "denso",
+          "para-releer",
+          "ritmo-lento"
+        ]
+      },
+      {
+        "review_id": "REV-3-0043",
+        "reviewer_name": "Doris Medina Barrera",
+        "rating": 5,
+        "comment": "La trama se siente repetitiva hacia la mitad del libro.",
+        "submitted_at": "2026-07-09",
+        "verified_loan": true,
+        "tags": [
+          "para-releer",
+          "divertido",
+          "denso"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 62,
+    "isbn": "978705335743",
+    "title": "El Invierno de Amy",
+    "export_batch_id": "lote-2026-06",
+    "generated_at": "2026-06-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-3-0044",
+        "reviewer_name": "Angélica Viviana Acevedo Rubio",
+        "rating": 5,
+        "comment": "El final me dejo pensando varios dias.",
+        "submitted_at": "2026-07-09",
+        "verified_loan": true
+      },
+      {
+        "review_id": "REV-3-0045",
+        "reviewer_name": "María Ximena Escobar",
+        "rating": 5,
+        "comment": "No lo recomendaria, se sintio muy predecible.",
+        "submitted_at": "2026-06-09",
+        "verified_loan": true,
+        "tags": [
+          "recomendado",
+          "para-releer"
+        ]
+      },
+      {
+        "review_id": "REV-3-0046",
+        "reviewer_name": "Antonia Ardila",
+        "rating": 5,
+        "comment": "El final me dejo pensando varios dias.",
+        "submitted_at": "2026-06-28",
+        "verified_loan": false,
+        "tags": [
+          "bien-escrito",
+          "recomendado"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 60,
+    "isbn": "978295830857",
+    "title": "El Silencio de Tonya",
+    "export_batch_id": "lote-2026-06",
+    "generated_at": "2026-06-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-3-0047",
+        "reviewer_name": "Rodney Krueger",
+        "rating": 4,
+        "comment": "La edicion tiene varias erratas que distraen la lectura.",
+        "submitted_at": "2026-06-01",
+        "verified_loan": true,
+        "tags": [
+          "ritmo-agil",
+          "final-predecible"
+        ]
+      }
+    ]
+  }
+]

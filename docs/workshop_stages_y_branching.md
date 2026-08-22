@@ -345,40 +345,48 @@ resultado de drift y status del job en `$GITHUB_STEP_SUMMARY`.
 
 ---
 
-### Módulo B3 — Prueba end-to-end del flujo de tres etapas
+### Módulo B3 — Prueba end-to-end del flujo de tres etapas — ✅ completado
 
 **Concepto:** verificar el ciclo completo: `feature/*` → dev automático → PR →
 gate (sin migrate) → merge → `main` real.
 
 **Tarea:**
-- [X] Crear branch `feature/prueba-workshop`.
-- [X] Agregar una migración SQL trivial (ej. un comentario o índice inofensivo)
-      y hacer push.
+- [X] Crear branch (`feature/workflow-dev-test`).
+- [X] Agregar una migración SQL trivial
+      (`V202608211900__comment_on_penalties_table.sql`, `COMMENT ON TABLE`
+      sobre `penalties`) y hacer push.
 - [X] Confirmar en la pestaña Actions que se disparó `flyway-migrate-dev.yml`
-      y que migró contra `dev`.
-- [X] Abrir PR de `feature/prueba-workshop` hacia `main`.
-- [X] Confirmar que se disparó `flyway-pr-check.yml` (info + validate) y NO
-      `flyway-migrate-pdn.yml`.
-- [ ] Mergear el PR.
-- [ ] Confirmar que el merge (push resultante a `main`) disparó
+      y que migró contra `dev` (`Successfully applied 1 migration`).
+- [X] Abrir PR de `feature/workflow-dev-test` hacia `main` (#1).
+- [X] Confirmar que se disparó `flyway-pr-check.yml` (info + validate,
+      "Checksum drift: no detectado") y NO `flyway-migrate-pdn.yml`.
+- [X] Mergear el PR (con el check requerido en verde y branch al día con
+      `main`, por la regla de B2).
+- [X] Confirmar que el merge (push resultante a `main`) disparó
       `flyway-migrate-pdn.yml` y migró `main` de verdad.
 
 **Criterio de aceptación:** los tres workflows corrieron en el momento correcto
 del ciclo, cada uno exactamente una vez, con el resultado esperado en Neon.
 
-Notas:
+Notas: ciclo completo verificado en PR #1. Además se agregó un step de
+"Run Summary" a `flyway-pr-check.yml` (visible en la pestaña Summary del run,
+no en el detalle del step) con PR, target, resultado de drift y status del
+job — mismo patrón que ya existía en `flyway-migrate-pdn.yml`.
 
 ---
 
-### Módulo B4 — Actualizar el README con el flujo nuevo
+### Módulo B4 — Actualizar el README con el flujo nuevo — ✅ completado
 
 **Tarea:**
-- [ ] Reescribir la sección "Cómo se despliega a main" del `README.md` del
+- [X] Reescribir la sección "Cómo se despliega a main" del `README.md` del
       repo para documentar las tres etapas (dev automático, gate de PR,
       despliegue real), reemplazando la descripción del flujo viejo (que
       mencionaba un solo workflow `flyway-migrate.yml`).
 
-Notas:
+Notas: también se agregó el secreto `NEON_DEV_DATABASE_URL` a la tabla de
+secretos requeridos (antes solo listaba `NEON_MAIN_DATABASE_URL`), y se
+actualizó "Cómo agregar una migración nueva" para reflejar el flujo de 3
+pasos real (feature -> dev automático -> PR gate -> merge -> main).
 
 ---
 
