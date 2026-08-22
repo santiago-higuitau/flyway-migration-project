@@ -93,32 +93,62 @@ comparar el diff en git si algo cambia en el script.
 
 ## Cómo se despliega a main
 
-La idea es que nadie se conecte manualmente a la branch `main`. Sino que cada vez que se haga push a `main`
-en el repo de GitHub, tocando algo dentro de `sql_migrations/`, se dispara el workflow
-[`flyway-migrate.yml`](.github/workflows/flyway-migrate.yml), que:
+Nadie se conecta manualmente a la branch `main`, y nadie hace push directo a
+`main` tampoco: una branch protection rule lo exige. El despliegue real pasa
+por tres etapas, cada una con su propio workflow:
 
-1. Traduce el connection string de Neon al formato que Flyway necesita.
-2. Corre `flyway info` para ver qué hay pendiente.
-3. Corre `flyway validate` para asegurarse de que nadie editó una migración ya
-   aplicada.
-4. Corre `flyway migrate`.
-5. Deja un resumen del resultado en la pestaña Actions del repo.
+**1. `feature/*` → `dev` automático.** Cada push a una branch `feature/**`
+que toque `sql_migrations/` dispara
+[`flyway-migrate-dev.yml`](.github/workflows/flyway-migrate-dev.yml): traduce
+el connection string, corre `flyway info` → `validate` → `migrate` →
+`info`, contra la branch **dev** de Neon. Así cada feature deja `dev`
+actualizado y detecta errores de migración temprano, antes de siquiera abrir
+un PR.
 
-Para que esto funcione, hay que configurar un secreto en el repo:
+**2. Pull Request hacia `main` → gate, sin aplicar nada.** Abrir (o
+actualizar) un PR contra `main` dispara
+[`flyway-pr-check.yml`](.github/workflows/flyway-pr-check.yml), que corre
+únicamente `flyway info` + `flyway validate` contra **main** — nunca
+`migrate`. `validate` compara el checksum de cada migración ya aplicada
+contra el archivo en el repo: si alguien editó una migración que ya corrió
+(en vez de agregar una nueva, ver la sección de roll-forward más abajo), el
+checksum no coincide y el check falla. Este check está marcado como
+**required status check** en la branch protection rule de `main`, así que un
+PR no se puede mergear si no pasa. El resultado (número de PR, si se detectó
+drift de checksum, status del job) queda además en el summary del run, en la
+pestaña Actions.
+
+**3. Merge a `main` → despliegue real.** El merge de un PR aprobado genera un
+push a `main`, que dispara
+[`flyway-migrate-pdn.yml`](.github/workflows/flyway-migrate-pdn.yml) — el
+único workflow que corre `flyway migrate` de verdad contra la branch **main**
+de Neon. Corre `info` → `validate` → `migrate` → `info`, y deja un resumen
+del resultado en la pestaña Actions.
+
+Para que ambos workflows contra `main` funcionen, hay que configurar un
+secreto en el repo:
 
 **Settings → Secrets and variables → Actions → New repository secret**
 
 | Nombre | Valor |
 |---|---|
 | `NEON_MAIN_DATABASE_URL` | El connection string completo de la branch **main** de Neon |
+| `NEON_DEV_DATABASE_URL` | El connection string completo de la branch **dev** de Neon (para `flyway-migrate-dev.yml`) |
+
+La branch protection rule de `main` (**Settings → Branches**) exige PR antes
+de mergear y que el check `Info and validation to Neon (main)` pase en verde,
+además de que la branch esté al día con `main` antes de mergear.
 
 ## Cómo agregar una migración nueva
 
 1. Crea el archivo en `sql_migrations/` siguiendo el nombre `V<timestamp>__descripcion.sql`
    para cambios de estructura (crear tabla, agregar columna, índice), o
    `R__descripcion.sql` para funciones, store procedures o vistas.
-2. Pruébala primero contra `dev`, corriendo `flyway migrate` en la terminal.
-3. Cuando funcione, haz commit y push a `main`. El pipeline ci-cd correrá de manera automática toda la migration.
+2. Haz push a una branch `feature/*` — el pipeline la migra automáticamente
+   contra `dev`, sin pasos manuales.
+3. Abre un PR hacia `main`. El gate corre `info` + `validate` contra `main`
+   (sin aplicar nada) y debe pasar antes de poder mergear.
+4. Al mergear, el pipeline aplica la migración contra `main` de verdad.
 
 ## El error real y cómo se corrigió
 

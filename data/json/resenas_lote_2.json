@@ -1,0 +1,866 @@
+[
+  {
+    "book_id": 21,
+    "isbn": "978807907429",
+    "title": "The Winter of Luz",
+    "export_batch_id": "lote-2026-05",
+    "generated_at": "2026-05-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-2-0001",
+        "reviewer_name": "Carmen Mónica Rentería Martínez",
+        "rating": 5,
+        "comment": "Couldn't put it down, finished it in two days.",
+        "submitted_at": "2026-06-09",
+        "verified_loan": true,
+        "tags": [
+          "final-predecible"
+        ]
+      },
+      {
+        "review_id": "REV-2-0002",
+        "reviewer_name": "Ana Ríos",
+        "rating": 5,
+        "comment": "The pacing drags a lot in the middle section.",
+        "submitted_at": "2026-08-11",
+        "verified_loan": false,
+        "tags": [
+          "emotivo",
+          "final-predecible",
+          "final-inesperado"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 16,
+    "isbn": "978263640377",
+    "title": "El Viaje de Gilberto",
+    "export_batch_id": "lote-2026-05",
+    "generated_at": "2026-05-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-2-0003",
+        "reviewer_name": "Patricia Blanca Velásquez",
+        "rating": 5,
+        "comment": "Uno de los mejores que he leido este anio.",
+        "submitted_at": "2026-08-05",
+        "verified_loan": true,
+        "tags": [
+          "emotivo"
+        ]
+      },
+      {
+        "review_id": "REV-2-0004",
+        "reviewer_name": "Ángel Orlando Pinzón Oviedo",
+        "rating": 4,
+        "comment": "Me atrapo desde el primer capitulo, no pude dejarlo.",
+        "submitted_at": "2026-07-25",
+        "verified_loan": true
+      },
+      {
+        "review_id": "REV-2-0005",
+        "reviewer_name": "Justin Garcia",
+        "rating": 4,
+        "comment": "No lo recomendaria, se sintio muy predecible.",
+        "submitted_at": "2026-05-24",
+        "verified_loan": true
+      },
+      {
+        "review_id": "REV-2-0006",
+        "reviewer_name": "Santos Jhon Martínez Amaya",
+        "rating": 4,
+        "comment": "La edicion tiene varias erratas que distraen la lectura.",
+        "submitted_at": "2026-07-23",
+        "verified_loan": true,
+        "tags": [
+          "final-inesperado",
+          "emotivo",
+          "ritmo-agil"
+        ]
+      },
+      {
+        "review_id": "REV-2-0007",
+        "reviewer_name": "Tina Hayes",
+        "rating": 5,
+        "comment": "Perfecto para quienes disfrutan un ritmo pausado.",
+        "submitted_at": "2026-05-24",
+        "verified_loan": true,
+        "tags": [
+          "divertido",
+          "sobrevalorado",
+          "final-predecible"
+        ]
+      },
+      {
+        "review_id": "REV-2-0008",
+        "reviewer_name": "John Webb",
+        "rating": 4,
+        "comment": "El final me dejo pensando varios dias.",
+        "submitted_at": "2026-07-06",
+        "verified_loan": false,
+        "tags": [
+          "emotivo"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 15,
+    "isbn": "978867693652",
+    "title": "The Memory of David",
+    "export_batch_id": "lote-2026-05",
+    "generated_at": "2026-05-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-2-0009",
+        "reviewer_name": "Andrea Davis",
+        "rating": 4,
+        "comment": "Couldn't put it down, finished it in two days.",
+        "submitted_at": "2026-06-11",
+        "verified_loan": true
+      },
+      {
+        "review_id": "REV-2-0010",
+        "reviewer_name": "Augusto Jonatan Carrillo",
+        "rating": 5,
+        "comment": "Couldn't put it down, finished it in two days.",
+        "submitted_at": "2026-06-30",
+        "verified_loan": false,
+        "tags": [
+          "recomendado",
+          "denso",
+          "ritmo-agil"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 61,
+    "isbn": "978899355717",
+    "title": "The Journey of Esperanza",
+    "export_batch_id": "lote-2026-05",
+    "generated_at": "2026-05-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-2-0011",
+        "reviewer_name": "Jeffrey Martinez",
+        "rating": 4,
+        "comment": "One of the best releases I've read this year.",
+        "submitted_at": "2026-08-04",
+        "verified_loan": true
+      },
+      {
+        "review_id": "REV-2-0012",
+        "reviewer_name": "Jonatan Burbano Rodríguez",
+        "rating": 4,
+        "comment": "Wouldn't recommend it, felt too predictable.",
+        "submitted_at": "2026-08-02",
+        "verified_loan": true,
+        "tags": [
+          "ritmo-agil",
+          "denso",
+          "sobrevalorado"
+        ]
+      },
+      {
+        "review_id": "REV-2-0013",
+        "reviewer_name": "Kristin Everett",
+        "rating": 5,
+        "comment": "Wished the secondary characters had more depth.",
+        "submitted_at": "2026-05-25",
+        "verified_loan": false,
+        "tags": [
+          "ritmo-lento"
+        ]
+      },
+      {
+        "review_id": "REV-2-0014",
+        "reviewer_name": "Luis Edwin Ocampo Ibarra",
+        "rating": 4,
+        "comment": "This edition has a few distracting typos.",
+        "submitted_at": "2026-07-21",
+        "verified_loan": true,
+        "tags": [
+          "final-inesperado",
+          "denso",
+          "traduccion-mejorable"
+        ]
+      },
+      {
+        "review_id": "REV-2-0015",
+        "reviewer_name": "Didier González",
+        "rating": 5,
+        "comment": "Couldn't put it down, finished it in two days.",
+        "submitted_at": "2026-06-12",
+        "verified_loan": false,
+        "tags": [
+          "recomendado"
+        ]
+      },
+      {
+        "review_id": "REV-2-0016",
+        "reviewer_name": "Michael Morales",
+        "rating": 5,
+        "comment": "The pacing drags a lot in the middle section.",
+        "submitted_at": "2026-08-08",
+        "verified_loan": false,
+        "tags": [
+          "recomendado",
+          "denso",
+          "emotivo"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 7,
+    "isbn": "978181282812",
+    "title": "The Door of Cristian",
+    "export_batch_id": "lote-2026-05",
+    "generated_at": "2026-05-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-2-0017",
+        "reviewer_name": "Fernando Fredy Pérez Martínez",
+        "rating": 4,
+        "comment": "One of the best releases I've read this year.",
+        "submitted_at": "2026-07-18",
+        "verified_loan": true,
+        "tags": [
+          "bien-escrito"
+        ]
+      },
+      {
+        "review_id": "REV-2-0018",
+        "reviewer_name": "Fernanda Martínez",
+        "rating": 5,
+        "comment": "This edition has a few distracting typos.",
+        "submitted_at": "2026-05-25",
+        "verified_loan": false
+      },
+      {
+        "review_id": "REV-2-0019",
+        "reviewer_name": "Edwin Benson",
+        "rating": 2,
+        "comment": "Wished the secondary characters had more depth.",
+        "submitted_at": "2026-07-08",
+        "verified_loan": false
+      },
+      {
+        "review_id": "REV-2-0020",
+        "reviewer_name": "Rocío Valencia Guerrero",
+        "rating": 5,
+        "comment": "Wished the secondary characters had more depth.",
+        "submitted_at": "2026-07-18",
+        "verified_loan": false,
+        "tags": [
+          "sobrevalorado",
+          "bien-escrito"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 51,
+    "isbn": "978612030041",
+    "title": "The Memory of William",
+    "export_batch_id": "lote-2026-05",
+    "generated_at": "2026-05-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-2-0021",
+        "reviewer_name": "Juan Andrés Murillo Oviedo",
+        "rating": 5,
+        "comment": "The pacing drags a lot in the middle section.",
+        "submitted_at": "2026-07-30",
+        "verified_loan": true
+      },
+      {
+        "review_id": "REV-2-0022",
+        "reviewer_name": "Alberto Patiño Muñoz",
+        "rating": 3,
+        "comment": "The ending left me thinking for days.",
+        "submitted_at": "2026-07-03",
+        "verified_loan": false,
+        "tags": [
+          "ritmo-agil",
+          "final-inesperado"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 3,
+    "isbn": "978459381932",
+    "title": "El Jardin de Sheri",
+    "export_batch_id": "lote-2026-05",
+    "generated_at": "2026-05-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-2-0023",
+        "reviewer_name": "Nicholas Cruz",
+        "rating": 4,
+        "comment": "La edicion tiene varias erratas que distraen la lectura.",
+        "submitted_at": "2026-07-16",
+        "verified_loan": true
+      },
+      {
+        "review_id": "REV-2-0024",
+        "reviewer_name": "Richard Jackson",
+        "rating": 5,
+        "comment": "El final me dejo pensando varios dias.",
+        "submitted_at": "2026-07-15",
+        "verified_loan": false,
+        "tags": [
+          "final-inesperado",
+          "final-predecible",
+          "ritmo-lento"
+        ]
+      },
+      {
+        "review_id": "REV-2-0025",
+        "reviewer_name": "Hugo Restrepo Burbano",
+        "rating": 1,
+        "comment": "La trama se siente repetitiva hacia la mitad del libro.",
+        "submitted_at": "2026-06-27",
+        "verified_loan": false,
+        "tags": [
+          "ritmo-agil",
+          "final-predecible",
+          "emotivo"
+        ]
+      },
+      {
+        "review_id": "REV-2-0026",
+        "reviewer_name": "Héctor León",
+        "rating": 5,
+        "comment": "Uno de los mejores que he leido este anio.",
+        "submitted_at": "2026-05-24",
+        "verified_loan": true,
+        "tags": [
+          "final-predecible",
+          "para-releer"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 1,
+    "isbn": "978896278517",
+    "title": "El Estrella de Luis",
+    "export_batch_id": "lote-2026-05",
+    "generated_at": "2026-05-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-2-0027",
+        "reviewer_name": "Andrés Álvaro Burbano Espitia",
+        "rating": 5,
+        "comment": "No lo recomendaria, se sintio muy predecible.",
+        "submitted_at": "2026-08-13",
+        "verified_loan": true,
+        "tags": [
+          "recomendado",
+          "divertido"
+        ]
+      },
+      {
+        "review_id": "REV-2-0028",
+        "reviewer_name": "Lilian Andrea Delgado Valencia",
+        "rating": 3,
+        "comment": "La edicion tiene varias erratas que distraen la lectura.",
+        "submitted_at": "2026-06-05",
+        "verified_loan": true,
+        "tags": [
+          "divertido"
+        ]
+      },
+      {
+        "review_id": "REV-2-0029",
+        "reviewer_name": "Pablo José Vega",
+        "rating": 4,
+        "comment": "Me atrapo desde el primer capitulo, no pude dejarlo.",
+        "submitted_at": "2026-06-10",
+        "verified_loan": false
+      },
+      {
+        "review_id": "REV-2-0030",
+        "reviewer_name": "Claudia Velásquez Córdoba",
+        "rating": 2,
+        "comment": "La trama se siente repetitiva hacia la mitad del libro.",
+        "submitted_at": "2026-06-24",
+        "verified_loan": false
+      },
+      {
+        "review_id": "REV-2-0031",
+        "reviewer_name": "Melissa Bautista",
+        "rating": 2,
+        "comment": "Uno de los mejores que he leido este anio.",
+        "submitted_at": "2026-07-03",
+        "verified_loan": true,
+        "tags": [
+          "recomendado",
+          "para-releer"
+        ]
+      },
+      {
+        "review_id": "REV-2-0032",
+        "reviewer_name": "Elsa Villa Castro",
+        "rating": 5,
+        "comment": "Uno de los mejores que he leido este anio.",
+        "submitted_at": "2026-07-20",
+        "verified_loan": true
+      }
+    ]
+  },
+  {
+    "book_id": 17,
+    "isbn": "978911127356",
+    "title": "El Sombra de Juan",
+    "export_batch_id": "lote-2026-05",
+    "generated_at": "2026-05-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-2-0033",
+        "reviewer_name": "Andrés Leonardo Torres",
+        "rating": 5,
+        "comment": "El final me dejo pensando varios dias.",
+        "submitted_at": "2026-06-23",
+        "verified_loan": true,
+        "tags": [
+          "ritmo-lento",
+          "bien-escrito"
+        ]
+      },
+      {
+        "review_id": "REV-2-0034",
+        "reviewer_name": "Mr. Thomas Ramsey",
+        "rating": 5,
+        "comment": "La trama se siente repetitiva hacia la mitad del libro.",
+        "submitted_at": "2026-08-11",
+        "verified_loan": true,
+        "tags": [
+          "bien-escrito"
+        ]
+      },
+      {
+        "review_id": "REV-2-0035",
+        "reviewer_name": "Irma Sofía Caballero",
+        "rating": 5,
+        "comment": "La edicion tiene varias erratas que distraen la lectura.",
+        "submitted_at": "2026-06-11",
+        "verified_loan": false,
+        "tags": [
+          "traduccion-mejorable",
+          "emotivo",
+          "sobrevalorado"
+        ]
+      },
+      {
+        "review_id": "REV-2-0036",
+        "reviewer_name": "Gloria María Hernández",
+        "rating": 5,
+        "comment": "Esperaba mas desarrollo de los personajes secundarios.",
+        "submitted_at": "2026-08-19",
+        "verified_loan": false,
+        "tags": [
+          "ritmo-lento"
+        ]
+      },
+      {
+        "review_id": "REV-2-0037",
+        "reviewer_name": "Randy Moore",
+        "rating": 4,
+        "comment": "El final me dejo pensando varios dias.",
+        "submitted_at": "2026-05-30",
+        "verified_loan": true,
+        "tags": [
+          "ritmo-lento",
+          "final-predecible",
+          "bien-escrito"
+        ]
+      },
+      {
+        "review_id": "REV-2-0038",
+        "reviewer_name": "María Marcela Pinzón González",
+        "rating": 4,
+        "comment": "El final me dejo pensando varios dias.",
+        "submitted_at": "2026-06-29",
+        "verified_loan": true,
+        "tags": [
+          "para-releer"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 56,
+    "isbn": "978713126806",
+    "title": "The Road of Lisa",
+    "export_batch_id": "lote-2026-05",
+    "generated_at": "2026-05-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-2-0039",
+        "reviewer_name": "Melissa Mcclure",
+        "rating": 4,
+        "comment": "Couldn't put it down, finished it in two days.",
+        "submitted_at": "2026-08-19",
+        "verified_loan": true,
+        "tags": [
+          "final-inesperado"
+        ]
+      },
+      {
+        "review_id": "REV-2-0040",
+        "reviewer_name": "María Maritza Bustamante Córdoba",
+        "rating": 3,
+        "comment": "Couldn't put it down, finished it in two days.",
+        "submitted_at": "2026-08-14",
+        "verified_loan": true,
+        "tags": [
+          "para-releer",
+          "final-predecible",
+          "emotivo"
+        ]
+      },
+      {
+        "review_id": "REV-2-0041",
+        "reviewer_name": "Sherri Miller",
+        "rating": 1,
+        "comment": "Wouldn't recommend it, felt too predictable.",
+        "submitted_at": "2026-08-01",
+        "verified_loan": true,
+        "tags": [
+          "divertido"
+        ]
+      },
+      {
+        "review_id": "REV-2-0042",
+        "reviewer_name": "Luz Lady Díaz Suárez",
+        "rating": 5,
+        "comment": "Couldn't put it down, finished it in two days.",
+        "submitted_at": "2026-07-07",
+        "verified_loan": true,
+        "tags": [
+          "emotivo",
+          "divertido"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 45,
+    "isbn": "978049189417",
+    "title": "The Door of Gloria",
+    "export_batch_id": "lote-2026-05",
+    "generated_at": "2026-05-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-2-0043",
+        "reviewer_name": "Alberto Esteban Meza Castillo",
+        "rating": 4,
+        "comment": "The ending left me thinking for days.",
+        "submitted_at": "2026-06-04",
+        "verified_loan": true,
+        "tags": [
+          "denso",
+          "final-inesperado"
+        ]
+      },
+      {
+        "review_id": "REV-2-0044",
+        "reviewer_name": "Jason Thompson",
+        "rating": 4,
+        "comment": "The ending left me thinking for days.",
+        "submitted_at": "2026-08-05",
+        "verified_loan": true,
+        "tags": [
+          "recomendado"
+        ]
+      },
+      {
+        "review_id": "REV-2-0045",
+        "reviewer_name": "Sandra Beatriz Sierra Córdoba",
+        "rating": 4,
+        "comment": "The ending left me thinking for days.",
+        "submitted_at": "2026-08-14",
+        "verified_loan": true
+      },
+      {
+        "review_id": "REV-2-0046",
+        "reviewer_name": "Heather Bentley",
+        "rating": 4,
+        "comment": "One of the best releases I've read this year.",
+        "submitted_at": "2026-06-28",
+        "verified_loan": true,
+        "tags": [
+          "recomendado"
+        ]
+      },
+      {
+        "review_id": "REV-2-0047",
+        "reviewer_name": "Antonio Pulido",
+        "rating": 4,
+        "comment": "The ending left me thinking for days.",
+        "submitted_at": "2026-06-04",
+        "verified_loan": true,
+        "tags": [
+          "para-releer",
+          "recomendado",
+          "final-inesperado"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 63,
+    "isbn": "978083309655",
+    "title": "El Puerta de Christopher",
+    "export_batch_id": "lote-2026-05",
+    "generated_at": "2026-05-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-2-0048",
+        "reviewer_name": "Yohana Maldonado",
+        "rating": 4,
+        "comment": "Me atrapo desde el primer capitulo, no pude dejarlo.",
+        "submitted_at": "2026-06-22",
+        "verified_loan": true,
+        "tags": [
+          "traduccion-mejorable",
+          "bien-escrito"
+        ]
+      },
+      {
+        "review_id": "REV-2-0049",
+        "reviewer_name": "David Wilson",
+        "rating": 5,
+        "comment": "La edicion tiene varias erratas que distraen la lectura.",
+        "submitted_at": "2026-06-11",
+        "verified_loan": false,
+        "tags": [
+          "recomendado",
+          "denso"
+        ]
+      },
+      {
+        "review_id": "REV-2-0050",
+        "reviewer_name": "Dustin Richardson",
+        "rating": 3,
+        "comment": "El final me dejo pensando varios dias.",
+        "submitted_at": "2026-07-25",
+        "verified_loan": true,
+        "tags": [
+          "recomendado"
+        ]
+      },
+      {
+        "review_id": "REV-2-0051",
+        "reviewer_name": "Lisa Thornton",
+        "rating": 3,
+        "comment": "No lo recomendaria, se sintio muy predecible.",
+        "submitted_at": "2026-07-30",
+        "verified_loan": false,
+        "tags": [
+          "traduccion-mejorable",
+          "recomendado"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 4,
+    "isbn": "978051471697",
+    "title": "The Mirror of Luz",
+    "export_batch_id": "lote-2026-05",
+    "generated_at": "2026-05-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-2-0052",
+        "reviewer_name": "Luis Sanabria",
+        "rating": 5,
+        "comment": "Great pick if you enjoy a slow-burn story.",
+        "submitted_at": "2026-06-13",
+        "verified_loan": false,
+        "tags": [
+          "bien-escrito",
+          "denso",
+          "recomendado"
+        ]
+      },
+      {
+        "review_id": "REV-2-0053",
+        "reviewer_name": "Elizabeth Buchanan",
+        "rating": 4,
+        "comment": "This edition has a few distracting typos.",
+        "submitted_at": "2026-07-31",
+        "verified_loan": false
+      },
+      {
+        "review_id": "REV-2-0054",
+        "reviewer_name": "Yenny Luz Reyes",
+        "rating": 4,
+        "comment": "Wished the secondary characters had more depth.",
+        "submitted_at": "2026-07-24",
+        "verified_loan": false
+      }
+    ]
+  },
+  {
+    "book_id": 78,
+    "isbn": "978613252724",
+    "title": "The Garden of Linda",
+    "export_batch_id": "lote-2026-05",
+    "generated_at": "2026-05-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-2-0055",
+        "reviewer_name": "Sebastián José Burgos Parada",
+        "rating": 4,
+        "comment": "Wished the secondary characters had more depth.",
+        "submitted_at": "2026-06-04",
+        "verified_loan": false
+      },
+      {
+        "review_id": "REV-2-0056",
+        "reviewer_name": "Lucía León",
+        "rating": 5,
+        "comment": "Wished the secondary characters had more depth.",
+        "submitted_at": "2026-06-14",
+        "verified_loan": false,
+        "tags": [
+          "ritmo-lento"
+        ]
+      },
+      {
+        "review_id": "REV-2-0057",
+        "reviewer_name": "Ronnie Hurley",
+        "rating": 5,
+        "comment": "Great pick if you enjoy a slow-burn story.",
+        "submitted_at": "2026-07-25",
+        "verified_loan": true
+      }
+    ]
+  },
+  {
+    "book_id": 59,
+    "isbn": "978061319151",
+    "title": "The Door of José",
+    "export_batch_id": "lote-2026-05",
+    "generated_at": "2026-05-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-2-0058",
+        "reviewer_name": "Michael Steele",
+        "rating": 4,
+        "comment": "Wished the secondary characters had more depth.",
+        "submitted_at": "2026-06-10",
+        "verified_loan": false
+      },
+      {
+        "review_id": "REV-2-0059",
+        "reviewer_name": "Magda Buitrago Monroy",
+        "rating": 4,
+        "comment": "The pacing drags a lot in the middle section.",
+        "submitted_at": "2026-06-30",
+        "verified_loan": false,
+        "tags": [
+          "bien-escrito",
+          "denso",
+          "emotivo"
+        ]
+      },
+      {
+        "review_id": "REV-2-0060",
+        "reviewer_name": "Kelsey Hansen",
+        "rating": 2,
+        "comment": "Great pick if you enjoy a slow-burn story.",
+        "submitted_at": "2026-05-25",
+        "verified_loan": false,
+        "tags": [
+          "ritmo-agil"
+        ]
+      },
+      {
+        "review_id": "REV-2-0061",
+        "reviewer_name": "Orlando Ruiz",
+        "rating": 5,
+        "comment": "Couldn't put it down, finished it in two days.",
+        "submitted_at": "2026-06-09",
+        "verified_loan": false
+      },
+      {
+        "review_id": "REV-2-0062",
+        "reviewer_name": "Fernando Ortiz Hernández",
+        "rating": 4,
+        "comment": "One of the best releases I've read this year.",
+        "submitted_at": "2026-07-19",
+        "verified_loan": true,
+        "tags": [
+          "ritmo-agil",
+          "sobrevalorado",
+          "final-predecible"
+        ]
+      }
+    ]
+  },
+  {
+    "book_id": 14,
+    "isbn": "978836711798",
+    "title": "The Star of Katerine",
+    "export_batch_id": "lote-2026-05",
+    "generated_at": "2026-05-01T09:00:00",
+    "reviews": [
+      {
+        "review_id": "REV-2-0063",
+        "reviewer_name": "Victor Freeman",
+        "rating": 4,
+        "comment": "Wouldn't recommend it, felt too predictable.",
+        "submitted_at": "2026-06-06",
+        "verified_loan": false,
+        "tags": [
+          "final-inesperado",
+          "bien-escrito",
+          "traduccion-mejorable"
+        ]
+      },
+      {
+        "review_id": "REV-2-0064",
+        "reviewer_name": "Kimberly Baker",
+        "rating": 4,
+        "comment": "Couldn't put it down, finished it in two days.",
+        "submitted_at": "2026-06-23",
+        "verified_loan": false,
+        "tags": [
+          "emotivo",
+          "divertido"
+        ]
+      },
+      {
+        "review_id": "REV-2-0065",
+        "reviewer_name": "Michael Webb",
+        "rating": 3,
+        "comment": "One of the best releases I've read this year.",
+        "submitted_at": "2026-08-15",
+        "verified_loan": true
+      },
+      {
+        "review_id": "REV-2-0066",
+        "reviewer_name": "Eric Wood",
+        "rating": 4,
+        "comment": "Couldn't put it down, finished it in two days.",
+        "submitted_at": "2026-06-09",
+        "verified_loan": false
+      },
+      {
+        "review_id": "REV-2-0067",
+        "reviewer_name": "Kristin Hall",
+        "rating": 4,
+        "comment": "This edition has a few distracting typos.",
+        "submitted_at": "2026-05-25",
+        "verified_loan": true
+      }
+    ]
+  }
+]
