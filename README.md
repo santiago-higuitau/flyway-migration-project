@@ -7,13 +7,69 @@ Este repo cubre dos entregables sobre el mismo dominio (biblioteca):
   pipeline automatizado. Ver secciones de Flyway más abajo.
 - **Momento 2** (Cloud Data Warehouse e Ingesta): los datos de Neon se mueven a
   Snowflake, tanto relacionales como semi-estructurados, con Tasks, RBAC y
-  Masking. Ver [Momento 2 — Snowflake](#momento-2--snowflake) más abajo.
+  Masking. Ver [Momento 2: Snowflake](#momento-2-snowflake) más abajo.
 
 El dominio elegido fue biblioteca. Para entender el modelo completo (por
 qué separamos libros de ediciones y de copias, por qué usuarios y bibliotecarios
 son tablas distintas, etc.), está explicado en
 [`docs/dominio_de_negocio.md`](docs/dominio_de_negocio.md), con el diagrama
 entidad-relación incluido.
+
+## Índice
+
+- [Archivos por Momento](#archivos-por-momento)
+  - [Momento 1: CI/CD en Base de Datos](#momento-1-cicd-en-base-de-datos)
+  - [Momento 2: Cloud Data Warehouse e Ingesta](#momento-2-cloud-data-warehouse-e-ingesta)
+- [Qué se necesita antes de empezar](#qué-se-necesita-antes-de-empezar)
+- [Cómo está organizado el repo](#cómo-está-organizado-el-repo)
+- [Levantar el ambiente local (branch dev)](#levantar-el-ambiente-local-branch-dev)
+- [Cómo se regeneraron los datos de prueba](#cómo-se-regeneraron-los-datos-de-prueba)
+- [Cómo se despliega a main](#cómo-se-despliega-a-main)
+- [Cómo agregar una migración nueva](#cómo-agregar-una-migración-nueva)
+- [El error real y cómo se corrigió](#el-error-real-y-cómo-se-corrigió)
+- [Preguntas frecuentes](#preguntas-frecuentes)
+- [Momento 2: Snowflake](#momento-2-snowflake)
+  - [Estructura](#estructura)
+  - [Orden de ejecución](#orden-de-ejecución)
+  - [Ingesta relacional](#ingesta-relacional)
+
+## Archivos por Momento
+
+Referencia rápida para distinción de los momentos: qué archivo corresponde a cada momento
+evaluativo.
+
+### Momento 1: CI/CD en Base de Datos
+
+| Ruta | Qué es |
+|---|---|
+| `sql_migrations/V202608111534__create_schema.sql` a `V202608111543__add_index_loans_user_id.sql` | Las 9 migraciones versionadas del esquema y datos iniciales |
+| `sql_migrations/R__fn_calculate_penalty_fee.sql`, `R__sp_pay_penalty.sql` | Migraciones repetibles (función y stored procedure) |
+| `code/data_generation.py` | Genera los datos sintéticos de `V...__seed_data.sql` |
+| `code/pyproject.toml`, `code/uv.lock` | Proyecto `uv` para `data_generation.py` |
+| `.github/workflows/flyway-migrate-pdn.yml` | Despliegue real a `main` (nació como `flyway-migrate.yml` en este momento) |
+| `docs/dominio_de_negocio.md` | Modelo de dominio y diagrama entidad-relación |
+| `docs/evidencias/` | Capturas del error de longitud de columna y su corrección por roll-forward |
+| `flyway.conf.example` | Plantilla de configuración de Flyway |
+
+### Momento 2: Cloud Data Warehouse e Ingesta
+
+| Ruta | Qué es |
+|---|---|
+| `snowflake/scripts/00_cleanup_total.sql` a `10_final_validation.sql` | Los 12 scripts de arquitectura, ingesta, Tasks, RBAC y Masking en Snowflake |
+| `code/elt_neon_to_library_dw.py` | Ingesta relacional Neon → `LIBRARY_DW.RAW`, con detección de schema drift |
+| `code/generate_book_reviews_json.py` | Genera los 5 JSON de reseñas de lectores (fuente semi-estructurada) |
+| `data/json/resenas_lote_1.json` a `_5.json` | Los 5 archivos JSON generados |
+| `sql_migrations/V202608211900__comment_on_penalties_table.sql`, `V202608212030__add_website_to_authors.sql`, `V202608220700__add_goodreads_url_to_authors.sql` | Migraciones usadas para demostrar el caso de schema drift (C2) |
+| `.github/workflows/flyway-migrate-dev.yml` | Automatización de despliegue a `dev` (feature/\*\* → dev automático) |
+| `.github/workflows/flyway-pr-check.yml` | Gate de PR contra `main` (`info` + `validate`, sin `migrate`) |
+| `docs/decisiones_momento_2.md` | Documento de decisiones y recap para la sustentación |
+| `.env.example` (variables `SNOWFLAKE_*`) | Configuración de conexión a Snowflake |
+
+**Nota sobre la automatización:** el Momento 1 dejó automatizado el despliegue
+a `main` (`flyway-migrate-pdn.yml`). El Momento 2 completó el pipeline
+agregando la automatización hacia `dev` (`flyway-migrate-dev.yml`) y el gate
+de validación de PR (`flyway-pr-check.yml`), dejando las tres etapas
+descritas en la sección "Cómo se despliega a main" más abajo.
 
 ## Qué se necesita antes de empezar
 
@@ -112,7 +168,7 @@ un PR.
 **2. Pull Request hacia `main` → gate, sin aplicar nada.** Abrir (o
 actualizar) un PR contra `main` dispara
 [`flyway-pr-check.yml`](.github/workflows/flyway-pr-check.yml), que corre
-únicamente `flyway info` + `flyway validate` contra **main** — nunca
+únicamente `flyway info` + `flyway validate` contra **main**, nunca
 `migrate`. `validate` compara el checksum de cada migración ya aplicada
 contra el archivo en el repo: si alguien editó una migración que ya corrió
 (en vez de agregar una nueva, ver la sección de roll-forward más abajo), el
@@ -198,7 +254,7 @@ igual, sin pasos manuales de por medio.
 
 ---
 
-## Momento 2 -- Snowflake
+## Momento 2: Snowflake
 
 Los datos de Neon se ingieren en un Data Warehouse en Snowflake
 (`LIBRARY_DW`), desde dos fuentes: la base relacional (vía Flyway, ya
