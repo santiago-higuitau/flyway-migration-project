@@ -1,0 +1,51 @@
+version: 2
+
+sources:
+  - name: raw_library
+    database: LIBRARY_DW
+    schema: RAW
+    description: >
+      Capa Bronze relacional — las 11 tablas del dominio biblioteca, cargadas sin
+      transformar desde Neon vía el ELT de la Sesión 4 (write_pandas).
+    tables:
+      - name: authors
+        description: Una fila por autor. Incluye lugar de nacimiento, nacionalidad y fechas de vida.
+      - name: categories
+        description: Una fila por categoría/género de libro.
+      - name: books
+        description: Una fila por libro (título, ISBN, idioma original), independiente de su edición.
+      - name: books_authors
+        description: Tabla puente entre books y authors (relación muchos a muchos).
+      - name: books_categories
+        description: Tabla puente entre books y categories (relación muchos a muchos).
+      - name: editions
+        description: Una fila por edición de un libro (editorial, año, idioma, costo de reposición).
+      - name: copies
+        description: Una fila por copia física de una edición, con su estado (available, loaned, damaged).
+      - name: users
+        description: Una fila por usuario de la biblioteca.
+      - name: librarians
+        description: Una fila por bibliotecario.
+      - name: loans
+        description: Una fila por préstamo, referenciando copia, usuario y bibliotecario.
+      - name: penalties
+        description: Una fila por multa asociada a un préstamo.
+
+  - name: raw_book_reviews
+    database: LIBRARY_DW
+    schema: BOOK_REVIEWS
+    description: >
+      Capa Bronze semi-estructurada — reseñas de lectores cargadas vía External Stage
+      (S3). Sin aplanar: una fila por objeto JSON de libro con su
+      arreglo de reseñas.
+    tables:
+      - name: raw_reviews
+        description: >
+          Una fila por libro exportado, columna raw_data de tipo VARIANT (incluye el
+          arreglo de reviews). El aplanado a nivel de reseña ocurre en
+          stg_book_reviews_flattened, no aquí.
+        config:
+          loaded_at_field: _stg_loaded_at
+          freshness:
+            warn_after: {count: 10, period: day}
+            error_after: {count: 20, period: day}
