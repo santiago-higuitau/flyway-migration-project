@@ -24,7 +24,7 @@ models:
       - name: unpaid_penalty_usd
         description: Monto en USD de las multas del usuario que aún no se han pagado.
         tests:
-          # Una mora negativa indicaría un error de cálculo, no un crédito real a favor del usuario.
+          # Una mora negativa indica un error de cálculo, no un crédito real a favor del usuario.
           - not_null
           - dbt_expectations.expect_column_values_to_be_between:
               arguments:
@@ -45,7 +45,7 @@ models:
       - name: total_copies
         description: Cantidad total de copias físicas de esta edición.
         tests:
-          # El desglose por estado debe sumar exactamente al total; si no, hay copias
+          # El desglose por estado debe sumar exactamente el total; si no, hay copias
           # con un status fuera de los tres valores esperados.
           - dbt_expectations.expect_column_values_to_be_between:
               arguments:
