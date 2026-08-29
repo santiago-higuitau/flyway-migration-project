@@ -1,0 +1,2 @@
+-- Reservado para tests singulares (SQL) que validen reglas de negocio específicas,
+-- además de los tests genéricos y de dbt-expectations declarados en los archivos .yml.
