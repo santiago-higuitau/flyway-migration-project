@@ -167,3 +167,5 @@ models:
                 max_value: 5
               config:
                 where: "avg_rating is not null"
+      - name: engagement_tier
+        description: Clasificación del libro según su volumen de préstamos (alto, medio, bajo, sin_prestamos).
