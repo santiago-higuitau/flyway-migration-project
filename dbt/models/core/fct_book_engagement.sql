@@ -36,7 +36,13 @@ final as (
         books.title,
         coalesce(prestamos_por_libro.total_loans, 0) as total_loans,
         resenas_por_libro.avg_rating,
-        coalesce(resenas_por_libro.total_reviews, 0) as total_reviews
+        coalesce(resenas_por_libro.total_reviews, 0) as total_reviews,
+        case
+            when coalesce(prestamos_por_libro.total_loans, 0) >= 10 then 'alto'
+            when coalesce(prestamos_por_libro.total_loans, 0) >= 3  then 'medio'
+            when coalesce(prestamos_por_libro.total_loans, 0) > 0   then 'bajo'
+            else 'sin_prestamos'
+        end as engagement_tier
 
     from {{ ref('stg_books') }} as books
     left join prestamos_por_libro
