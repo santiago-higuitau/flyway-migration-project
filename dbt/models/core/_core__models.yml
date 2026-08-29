@@ -84,7 +84,7 @@ models:
         description: Calificación promedio de las reseñas del libro (1 a 5). Vacío si el libro no tiene reseñas.
         tests:
           # La plataforma de reseñas certifica ratings de 1 a 5; un promedio fuera de
-          # ese rango indicaría un error de agregación, no una calificación real.
+          # dicho rango indicaría un error de agregación, no una calificación real.
           - dbt_expectations.expect_column_values_to_be_between:
               arguments:
                 min_value: 1
