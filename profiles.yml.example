@@ -1,0 +1,33 @@
+library_project:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE', 'LIBRARY_LOADER') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'WH_LIBRARY') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE', 'LIBRARY_DW') }}"
+      # Ojo: distinto de SNOWFLAKE_SCHEMA (=RAW), que usa el ELT de la ingesta
+      # relacional del Momento 2. Este es el esquema BASE de dbt: +schema:
+      # staging/core de dbt_project.yml se concatena a este valor
+      # (ANALYTICS_staging, ANALYTICS_core), no lo reemplaza.
+      schema: "{{ env_var('DBT_SCHEMA_BASE', 'ANALYTICS') }}"
+      threads: 4
+      client_session_keep_alive: false
+
+    pdn:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE', 'LIBRARY_LOADER') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'WH_LIBRARY') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE', 'LIBRARY_DW') }}"
+      # Distinto esquema base que dev -- mismo warehouse y mismo rol de servicio, pero
+      # los objetos quedan físicamente separados (ANALYTICS_PDN_staging,
+      # ANALYTICS_PDN_core), nunca se pisan entre sí.
+      schema: "{{ env_var('DBT_SCHEMA_BASE_PDN', 'ANALYTICS_PDN') }}"
+      threads: 4
+      client_session_keep_alive: false

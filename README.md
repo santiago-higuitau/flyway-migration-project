@@ -8,6 +8,10 @@ Este repo cubre dos entregables sobre el mismo dominio (biblioteca):
 - **Momento 2** (Cloud Data Warehouse e Ingesta): los datos de Neon se mueven a
   Snowflake, tanto relacionales como semi-estructurados, con Tasks, RBAC y
   Masking. Ver [Momento 2: Snowflake](#momento-2-snowflake) más abajo.
+- **Momento 3** (Transformación con dbt): los datos crudos de `LIBRARY_DW` se
+  transforman bajo arquitectura Medallón (staging/core), con tests declarativos y
+  despliegue automatizado dev → producción. Ver
+  [Momento 3: dbt sobre Snowflake](#momento-3-dbt-sobre-snowflake) más abajo.
 
 El dominio elegido fue biblioteca. Para entender el modelo completo (por
 qué separamos libros de ediciones y de copias, por qué usuarios y bibliotecarios
@@ -20,6 +24,7 @@ entidad-relación incluido.
 - [Archivos por Momento](#archivos-por-momento)
   - [Momento 1: CI/CD en Base de Datos](#momento-1-cicd-en-base-de-datos)
   - [Momento 2: Cloud Data Warehouse e Ingesta](#momento-2-cloud-data-warehouse-e-ingesta)
+  - [Momento 3: Transformación con dbt](#momento-3-transformación-con-dbt)
 - [Qué se necesita antes de empezar](#qué-se-necesita-antes-de-empezar)
 - [Cómo está organizado el repo](#cómo-está-organizado-el-repo)
 - [Levantar el ambiente local (branch dev)](#levantar-el-ambiente-local-branch-dev)
@@ -32,6 +37,11 @@ entidad-relación incluido.
   - [Estructura](#estructura)
   - [Orden de ejecución](#orden-de-ejecución)
   - [Ingesta relacional](#ingesta-relacional)
+- [Momento 3: dbt sobre Snowflake](#momento-3-dbt-sobre-snowflake)
+  - [Estructura](#estructura-1)
+  - [Arquitectura Medallón](#arquitectura-medallón)
+  - [Modelos Gold](#modelos-gold)
+  - [Automatización dev → pdn](#automatización-dev--pdn)
 
 ## Archivos por Momento
 
@@ -70,6 +80,16 @@ a `main` (`flyway-migrate-pdn.yml`). El Momento 2 completó el pipeline
 agregando la automatización hacia `dev` (`flyway-migrate-dev.yml`) y el gate
 de validación de PR (`flyway-pr-check.yml`), dejando las tres etapas
 descritas en la sección "Cómo se despliega a main" más abajo.
+
+### Momento 3: Transformación con dbt
+
+| Ruta | Qué es |
+|---|---|
+| `dbt_project.yml`, `profiles.yml.example`, `pyproject.toml`, `uv.lock`, `packages.yml` | Configuración del proyecto dbt; viven en la raíz, igual patrón que `flyway.conf` |
+| `dbt/models/staging/` | Capa Silver: 12 modelos (`stg_books`, `stg_users`, `stg_loans`, `stg_book_reviews`, etc.), cast/rename únicamente |
+| `dbt/models/core/` | Capa Gold: 5 modelos (`fct_user_delinquency`, `dim_edition_inventory`, `fct_book_engagement`, `fct_author_popularity`, `dim_category_performance`) |
+| `.github/workflows/dbt-build.yml` | Automatización: dos jobs encadenados (`build_dev` → `build_pdn`), el segundo solo corre si el primero (dev) pasa |
+| `docs/evidencias/images/04_lineage_graph.png` | Captura del lineage graph completo del proyecto dbt |
 
 ## Qué se necesita antes de empezar
 
@@ -180,7 +200,7 @@ pestaña Actions.
 
 **3. Merge a `main` → despliegue real.** El merge de un PR aprobado genera un
 push a `main`, que dispara
-[`flyway-migrate-pdn.yml`](.github/workflows/flyway-migrate-pdn.yml) — el
+[`flyway-migrate-pdn.yml`](.github/workflows/flyway-migrate-pdn.yml), el
 único workflow que corre `flyway migrate` de verdad contra la branch **main**
 de Neon. Corre `info` → `validate` → `migrate` → `info`, y deja un resumen
 del resultado en la pestaña Actions.
@@ -204,7 +224,7 @@ además de que la branch esté al día con `main` antes de mergear.
 1. Crea el archivo en `sql_migrations/` siguiendo el nombre `V<timestamp>__descripcion.sql`
    para cambios de estructura (crear tabla, agregar columna, índice), o
    `R__descripcion.sql` para funciones, store procedures o vistas.
-2. Haz push a una branch `feature/*` — el pipeline la migra automáticamente
+2. Haz push a una branch `feature/*`. El pipeline la migra automáticamente
    contra `dev`, sin pasos manuales.
 3. Abre un PR hacia `main`. El gate corre `info` + `validate` contra `main`
    (sin aplicar nada) y debe pasar antes de poder mergear.
@@ -248,7 +268,7 @@ por ejemplo) y roles de negocio distintos. Una misma persona podría, en teoría
 tener una fila en cada tabla sin que eso implique relación entre sí.
 
 **¿Por qué el script de datos no se conecta a la base?**
-Porque decidimos que todo el estado inicial —esquema y datos— viviera como
+Porque decidimos que todo el estado inicial (esquema y datos) viviera como
 migraciones de Flyway normales, para que `dev` y `main` se levanten exactamente
 igual, sin pasos manuales de por medio.
 
@@ -305,3 +325,77 @@ y carga en `LIBRARY_DW.RAW` con `write_pandas`. Detecta schema drift
 comparando columnas del origen contra el destino antes de cargar: si Neon
 trae una columna que Snowflake no tiene, falla con el DDL sugerido en vez de
 dejar que la carga reviente sin alguna explicación.
+
+---
+
+## Momento 3: dbt sobre Snowflake
+
+Los datos que aterrizan en `LIBRARY_DW` (Momento 2) se transforman con dbt bajo
+arquitectura Medallón: staging (Silver, cast/rename) y core (Gold, joins y
+agregaciones listos para consumo analítico).
+
+### Estructura
+
+```
+dbt_project.yml, profiles.yml.example,    Configuración del proyecto dbt (raíz,
+pyproject.toml, uv.lock, packages.yml     mismo patrón que flyway.conf)
+dbt/models/staging/                       Capa Silver -- 12 modelos
+dbt/models/core/                          Capa Gold -- 5 modelos
+.github/workflows/dbt-build.yml           Automatización dev -> pdn
+```
+
+Todos los comandos dbt se corren desde la raíz del repositorio, nunca desde
+dentro de `dbt/`:
+
+```bash
+set -a && source .env && set +a
+uv sync
+uv run dbt build --profiles-dir .
+```
+
+### Arquitectura Medallón
+
+**Staging** (`+materialized: view`) lee directo de dos sources declaradas en
+`dbt/models/staging/_staging__sources.yml`: `raw_library` (las 11 tablas
+relacionales de `LIBRARY_DW.RAW`) y `raw_book_reviews`
+(`LIBRARY_DW.BOOK_REVIEWS.RAW_REVIEWS`, JSON semi-estructurado). Cada modelo
+hace únicamente cast y rename, sin lógica de negocio. `stg_book_reviews` es el
+caso especial: aplana el JSON con dos `LATERAL FLATTEN` encadenados (reseñas y
+sus tags), migrando a un modelo versionado la misma lógica que el Momento 2
+tenía en un script SQL suelto (`snowflake/scripts/05_flatten_reviews_to_staging.sql`).
+
+**Core** (`+materialized: table`) usa `ref()` exclusivamente sobre modelos
+Silver, nunca sobre una fuente cruda.
+
+### Modelos Gold
+
+| Modelo | Pregunta de negocio | Cruza orígenes |
+|---|---|---|
+| `fct_user_delinquency` | ¿Qué usuarios están morosos y con cuánto valor de mora? | No |
+| `dim_edition_inventory` | ¿Cuántas copias hay por edición, y cuántas están dañadas? | No |
+| `fct_book_engagement` | ¿Qué libros se prestan más y tienen mejor reseña? | Sí, relacional (préstamos) + semi-estructurado (reseñas) |
+| `fct_author_popularity` | ¿Qué autores generan más préstamos y mejores reseñas? | Sí |
+| `dim_category_performance` | ¿Qué categorías se prestan más y tienen mejor reseña? | Sí |
+
+Cada modelo, tanto Silver como Gold, tiene tests genéricos (`unique`,
+`not_null`, `relationships`, `accepted_values`) sobre llaves y relaciones, más
+tests de `dbt_expectations` con justificación de negocio en comentario (rango
+de rating, montos no negativos, formato de email, etc.) en
+`_staging__models.yml` y `_core__models.yml`.
+
+### Automatización dev → pdn
+
+`dbt-build.yml` tiene dos jobs encadenados con `needs:`: `build_dev` corre
+`dbt build --target dev` sobre el esquema `ANALYTICS_*`, y `build_pdn` corre
+`dbt build --target pdn` sobre `ANALYTICS_PDN_*`, pero solo si `build_dev`
+terminó sin error. Si un test falla en dev, `build_pdn` queda en estado
+*skipped* y producción nunca recibe ese estado roto.
+
+Ambos targets están declarados en `profiles.yml.example`, apuntando al mismo
+warehouse y rol de servicio (`WH_LIBRARY`/`LIBRARY_LOADER`), pero con un
+`schema` base distinto. La separación entre entornos es física (esquemas
+distintos en Snowflake), no solo de configuración.
+
+Se dispara en push a `main` (con los paths de `dbt/**`/`dbt_project.yml`),
+manualmente (`workflow_dispatch`), y por cron diario mientras se mantiene esa
+programación para evidencia de sustentación.

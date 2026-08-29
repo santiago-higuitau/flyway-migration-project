@@ -1,0 +1,127 @@
+name: dbt build deployment
+
+on:
+  schedule:
+    - cron: "0 7 * * *"
+  push:
+    branches:
+      - main
+    paths:
+      - dbt/**
+      - dbt_project.yml
+      - ".github/workflows/dbt-build.yml"
+
+  workflow_dispatch:
+
+concurrency:
+  group: dbt-deployment
+  cancel-in-progress: false
+
+env:
+  PROJECT_DIR: ./
+
+jobs:
+  build_dev:
+    name: dbt build sobre Snowflake - Stage dev
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v7
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          enable-cache: true
+
+      - name: Sincronizar el entorno del proyecto dbt
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: uv sync --locked
+
+      - name: Crear profiles.yml desde la plantilla
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: cp profiles.yml.example profiles.yml
+
+      - name: dbt deps
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: uv run dbt deps --profiles-dir .
+
+      - name: dbt build
+        working-directory: ${{ env.PROJECT_DIR }}
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+          DBT_SCHEMA_BASE: ${{ secrets.DBT_SCHEMA_BASE }}
+        run: uv run dbt build --profiles-dir . --target dev
+
+      - name: Resumen del run
+        if: always()
+        run: |
+          {
+            echo "## dbt build dev: resultado"
+            echo ""
+            echo "| Campo | Valor |"
+            echo "|---|---|"
+            echo "| Proyecto | \`${PROJECT_DIR}\` |"
+            echo "| Commit | \`${{ github.sha }}\` |"
+            echo "| Disparado por | \`${{ github.event_name }}\` |"
+            echo "| Estado | \`${{ job.status }}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  build_pdn:
+    name: dbt build sobre Snowflake - Stage pdn
+    needs: build_dev
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v7
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          enable-cache: true
+
+      - name: Sincronizar el entorno del proyecto dbt
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: uv sync --locked
+
+      - name: Crear profiles.yml desde la plantilla
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: cp profiles.yml.example profiles.yml
+
+      - name: dbt deps
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: uv run dbt deps --profiles-dir .
+
+      - name: dbt build
+        working-directory: ${{ env.PROJECT_DIR }}
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+          DBT_SCHEMA_BASE_PDN: ${{ secrets.DBT_SCHEMA_BASE_PDN }}
+        run: uv run dbt build --profiles-dir . --target pdn
+
+      - name: Resumen del run
+        if: always()
+        run: |
+          {
+            echo "## dbt build pdn: resultado"
+            echo ""
+            echo "| Campo | Valor |"
+            echo "|---|---|"
+            echo "| Proyecto | \`${PROJECT_DIR}\` |"
+            echo "| Commit | \`${{ github.sha }}\` |"
+            echo "| Disparado por | \`${{ github.event_name }}\` |"
+            echo "| Estado | \`${{ job.status }}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"

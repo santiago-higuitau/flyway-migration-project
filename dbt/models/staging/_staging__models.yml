@@ -1,0 +1,276 @@
+version: 2
+
+models:
+  - name: stg_authors
+    description: Una fila por autor, con lugar de nacimiento, nacionalidad y fechas de vida.
+    columns:
+      - name: author_id
+        description: Llave primaria del autor.
+        tests:
+          - unique
+          - not_null
+      - name: name
+        description: Nombre del autor.
+      - name: nationality
+        description: Nacionalidad del autor.
+
+  - name: stg_books_authors
+    description: Tabla bridge entre books y authors (relación muchos a muchos).
+    columns:
+      - name: book_id
+        description: Libro asociado al autor.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_books')
+                field: book_id
+      - name: author_id
+        description: Autor asociado al libro.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_authors')
+                field: author_id
+
+  - name: stg_categories
+    description: Una fila por categoría/género de libro.
+    columns:
+      - name: category_id
+        description: Llave primaria de la categoría.
+        tests:
+          - unique
+          - not_null
+      - name: name
+        description: Nombre de la categoría o género.
+
+  - name: stg_books_categories
+    description: Tabla bridge entre books y categories (relación muchos a muchos).
+    columns:
+      - name: book_id
+        description: Libro asociado a la categoría.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_books')
+                field: book_id
+      - name: category_id
+        description: Categoría asociada al libro.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_categories')
+                field: category_id
+
+  - name: stg_books
+    description: Una fila por libro (título, ISBN, idioma original), independiente de su edición.
+    columns:
+      - name: book_id
+        description: Llave primaria del libro.
+        tests:
+          - unique
+          - not_null
+      - name: title
+        description: Título del libro.
+        tests:
+          - not_null
+      - name: isbn
+        description: ISBN del libro.
+        tests:
+          - unique
+
+  - name: stg_editions
+    description: >
+      Una fila por edición de un libro (editorial, año de publicación, idioma, costo de
+      reposición). Un libro puede tener varias ediciones.
+    columns:
+      - name: edition_id
+        description: Llave primaria de la edición.
+        tests:
+          - unique
+          - not_null
+      - name: book_id
+        description: Libro al que pertenece esta edición.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_books')
+                field: book_id
+      - name: publisher
+        description: Editorial que publicó esta edición.
+      - name: release_year
+        description: Año de publicación de esta edición.
+      - name: replacement_cost_usd
+        description: Costo de reposición de una copia de esta edición si se pierde o daña.
+        tests:
+          # Una edición sin costo de reposición no tiene sentido de negocio: es el monto
+          # que se le cobra al usuario si pierde o daña la copia.
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+
+  - name: stg_copies
+    description: >
+      Una fila por copia física de una edición, con su estado (available, loaned,
+      damaged). Un préstamo referencia una copia específica, no una edición en general.
+    columns:
+      - name: copy_id
+        description: Llave primaria de la copia.
+        tests:
+          - unique
+          - not_null
+      - name: edition_id
+        description: Edición a la que pertenece esta copia.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_editions')
+                field: edition_id
+      - name: status
+        description: Estado actual de la copia (available, loaned o damaged).
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['available', 'loaned', 'damaged']
+
+  - name: stg_users
+    description: Una fila por usuario de la biblioteca, con datos de contacto y de registro.
+    columns:
+      - name: user_id
+        description: Llave primaria del usuario.
+        tests:
+          - unique
+          - not_null
+      - name: status
+        description: Estado del usuario (active o inactive).
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['active', 'inactive']
+      - name: email
+        description: Correo de contacto del usuario.
+        tests:
+          # Un email mal formado indica un error de captura en el registro del usuario,
+          # no un dato de negocio válido.
+          - dbt_expectations.expect_column_values_to_match_regex:
+              arguments:
+                regex: '^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$'
+              config:
+                where: "email is not null"
+
+  - name: stg_librarians
+    description: Una fila por bibliotecario, con fecha de contratación y rol.
+    columns:
+      - name: librarian_id
+        description: Llave primaria del bibliotecario.
+        tests:
+          - unique
+          - not_null
+      - name: status
+        description: Estado del bibliotecario (active o inactive).
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['active', 'inactive']
+
+  - name: stg_loans
+    description: >
+      Una fila por préstamo, referenciando la copia prestada, el usuario y el
+      bibliotecario que lo gestionó.
+    columns:
+      - name: loan_id
+        description: Llave primaria del préstamo.
+        tests:
+          - unique
+          - not_null
+      - name: copy_id
+        description: Copia física prestada.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_copies')
+                field: copy_id
+      - name: user_id
+        description: Usuario que solicitó el préstamo.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_users')
+                field: user_id
+      - name: librarian_id
+        description: Bibliotecario que gestionó el préstamo.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_librarians')
+                field: librarian_id
+      - name: due_date
+        description: Fecha límite para devolver el préstamo.
+      - name: returned_at
+        description: Fecha en que se devolvió el préstamo. Vacío si aún no se ha devuelto.
+
+  - name: stg_penalties
+    description: Una fila por multa asociada a un préstamo devuelto con retraso o con daño.
+    columns:
+      - name: penalty_id
+        description: Llave primaria de la multa.
+        tests:
+          - unique
+          - not_null
+      - name: loan_id
+        description: Préstamo que generó la multa.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_loans')
+                field: loan_id
+      - name: total_fee_usd
+        description: Monto total de la multa en USD.
+        tests:
+          # Una multa negativa indicaría un error de cálculo, no un descuento real
+          # el negocio no tiene un concepto de "multa a favor del usuario".
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: paid
+        description: Indica si la multa ya fue pagada.
+      - name: paid_at
+        description: Fecha en que se pagó la multa. Vacío si aún no se ha pagado.
+
+  - name: stg_book_reviews
+    description: >
+      Una fila por combinación reseña-tag, aplanada desde el JSON crudo de reseñas de
+      lectores (una reseña sin tags queda con tag = NULL, no se pierde). Varias filas
+      comparten el mismo review_id cuando la reseña tiene más de un tag — la agregación
+      a nivel de libro ocurre en el modelo Gold que cruza reseñas con préstamos.
+    columns:
+      - name: book_id
+        description: Libro al que pertenece la reseña.
+        tests:
+          - not_null
+      - name: review_id
+        description: Identificador de la reseña dentro del JSON de origen (no es único por fila, por los tags).
+        tests:
+          - not_null
+      - name: rating
+        description: Calificación otorgada por el lector (1 a 5).
+        tests:
+          - not_null
+          # La plataforma externa de reseñas certifica ratings de 1 a 5. Un valor fuera de ese
+          # rango indica un error de la plataforma o de la ingesta, mas no una opinión real de un lector.
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 5
+      - name: tag
+        description: Etiqueta asociada a la reseña (por ejemplo, "emotivo" o "divertido"). Vacío si la reseña no tiene etiquetas.

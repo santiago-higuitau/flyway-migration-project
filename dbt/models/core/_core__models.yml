@@ -1,0 +1,169 @@
+version: 2
+
+models:
+  - name: fct_user_delinquency
+    description: >
+      Una fila por usuario, con préstamos actualmente vencidos y el valor de multas
+      generadas y sin pagar. is_delinquent marca a los usuarios con al menos un
+      préstamo vencido.
+    columns:
+      - name: user_id
+        description: Identificador del usuario.
+        tests:
+          - unique
+          - not_null
+      - name: overdue_loans
+        description: Préstamos que el usuario tiene sin devolver, pasada la fecha de entrega.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: max_days_overdue
+        description: Días de mora del préstamo más atrasado del usuario.
+      - name: unpaid_penalty_usd
+        description: Monto en USD de las multas del usuario que aún no se han pagado.
+        tests:
+          # Una mora negativa indicaría un error de cálculo, no un crédito real a favor del usuario.
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: is_delinquent
+        description: Indica si el usuario tiene al menos un préstamo vencido en este momento.
+
+  - name: dim_edition_inventory
+    description: >
+      Una fila por edición, con el conteo de copias por estado (available, loaned,
+      damaged) y el valor de reposición de las copias dañadas.
+    columns:
+      - name: edition_id
+        description: Identificador de la edición.
+        tests:
+          - unique
+          - not_null
+      - name: total_copies
+        description: Cantidad total de copias físicas de esta edición.
+        tests:
+          # El desglose por estado debe sumar exactamente al total; si no, hay copias
+          # con un status fuera de los tres valores esperados.
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: available_copies
+        description: Copias disponibles para préstamo en este momento.
+      - name: loaned_copies
+        description: Copias que están prestadas en este momento.
+      - name: damaged_copies
+        description: Copias marcadas como dañadas.
+      - name: damaged_value_usd
+        description: Costo de reposición de las copias dañadas de esta edición.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+
+  - name: fct_book_engagement
+    description: >
+      Una fila por libro, cruzando volumen de préstamos (dominio relacional) con
+      rating promedio y volumen de reseñas (dominio semi-estructurado).
+    columns:
+      - name: book_id
+        description: Identificador del libro.
+        tests:
+          - unique
+          - not_null
+      - name: total_loans
+        description: Cantidad de veces que se ha prestado el libro.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: avg_rating
+        description: Calificación promedio de las reseñas del libro (1 a 5). Vacío si el libro no tiene reseñas.
+        tests:
+          # La plataforma de reseñas certifica ratings de 1 a 5; un promedio fuera de
+          # ese rango indicaría un error de agregación, no una calificación real.
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 5
+              config:
+                where: "avg_rating is not null"
+      - name: total_reviews
+        description: Cantidad de reseñas recibidas por el libro.
+
+  - name: fct_author_popularity
+    description: >
+      Una fila por autor, agregando préstamos y reseñas de todos sus libros (vía la
+      tabla bridge books_authors). Un libro coescrito aporta su volumen completo a
+      cada autor, sin dividirlo entre coautores.
+    columns:
+      - name: author_id
+        description: Identificador del autor.
+        tests:
+          - unique
+          - not_null
+      - name: total_books
+        description: Cantidad de libros del autor en el catálogo.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: total_loans
+        description: Préstamos acumulados de todos los libros del autor.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: total_reviews
+        description: Reseñas acumuladas de todos los libros del autor.
+      - name: avg_rating
+        description: Calificación promedio de las reseñas de los libros del autor (1 a 5).
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 5
+              config:
+                where: "avg_rating is not null"
+
+  - name: dim_category_performance
+    description: >
+      Una fila por categoría/género, agregando préstamos y reseñas de todos los libros
+      de esa categoría (vía la tabla bridge books_categories). Un libro con varias
+      categorías aporta su volumen completo a cada una, sin dividirlo.
+    columns:
+      - name: category_id
+        description: Identificador de la categoría.
+        tests:
+          - unique
+          - not_null
+      - name: total_books
+        description: Cantidad de libros de esta categoría en el catálogo.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: total_loans
+        description: Préstamos acumulados de los libros de esta categoría.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: total_reviews
+        description: Reseñas acumuladas de los libros de esta categoría.
+      - name: avg_rating
+        description: Calificación promedio de las reseñas de los libros de esta categoría (1 a 5).
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 5
+              config:
+                where: "avg_rating is not null"
